@@ -29,7 +29,7 @@ export default function POS() {
 
   return (
     <div className="min-h-screen flex flex-col pb-16 md:pb-0">
-      <HeaderBar title={t('pos.title')} />
+      <HeaderBar title={t('pos.title')} showBack />
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-2xl">
         {!currentReceipt ? (
