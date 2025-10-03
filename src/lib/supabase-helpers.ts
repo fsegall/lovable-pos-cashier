@@ -45,7 +45,7 @@ export const supabaseHelpers = {
     productIds: string[] = []
   ): Promise<string> {
     // @ts-ignore - RPC function exists in database
-    const { data: invoiceId, error } = await supabase.rpc('create_invoice_with_payment', {
+    const { data, error } = await supabase.rpc('create_invoice_with_payment', {
       _amount_brl: amountBRL,
       _ref: ref,
       _product_ids: productIds,
@@ -56,21 +56,22 @@ export const supabaseHelpers = {
       throw error;
     }
 
-    return invoiceId;
+    // Retorna o ref da invoice criada
+    return data?.[0]?.ref || ref;
   },
 
   /**
    * Atualiza status de payment (e invoice automaticamente)
    */
   async updatePaymentStatus(
-    invoiceId: string,
+    ref: string,
     status: Receipt['status'],
     txHash?: string
   ): Promise<void> {
     // @ts-ignore - RPC function exists in database
     const { error } = await supabase.rpc('update_payment_status', {
-      _invoice_id: invoiceId,
-      _new_status: status,
+      _ref: ref,
+      _status: status,
       _tx_hash: txHash || null,
     });
 
@@ -123,7 +124,12 @@ export const supabaseHelpers = {
       return null;
     }
 
-    return data;
+    // current_merchant retorna um array com um objeto, pegamos o id do primeiro
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return null;
+    }
+
+    return data[0]?.id || null;
   },
 
   /**
