@@ -14,7 +14,247 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      invoices: {
+        Row: {
+          amount_brl: number
+          created_at: string
+          id: string
+          merchant_id: string
+          product_ids: string[] | null
+          ref: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_brl: number
+          created_at?: string
+          id?: string
+          merchant_id: string
+          product_ids?: string[] | null
+          ref: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          amount_brl?: number
+          created_at?: string
+          id?: string
+          merchant_id?: string
+          product_ids?: string[] | null
+          ref?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_members: {
+        Row: {
+          created_at: string
+          email: string | null
+          is_default: boolean
+          merchant_id: string
+          name: string | null
+          role: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          is_default?: boolean
+          merchant_id: string
+          name?: string | null
+          role: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          is_default?: boolean
+          merchant_id?: string
+          name?: string | null
+          role?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_members_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchants: {
+        Row: {
+          category: string | null
+          created_at: string
+          demo_mode: boolean
+          email: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          onboarding_complete: boolean
+          pay_with_binance: boolean
+          phone: string | null
+          pix_settlement: boolean
+          updated_at: string
+          use_program: boolean
+          wallet_masked: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          demo_mode?: boolean
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          onboarding_complete?: boolean
+          pay_with_binance?: boolean
+          phone?: string | null
+          pix_settlement?: boolean
+          updated_at?: string
+          use_program?: boolean
+          wallet_masked: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          demo_mode?: boolean
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          onboarding_complete?: boolean
+          pay_with_binance?: boolean
+          phone?: string | null
+          pix_settlement?: boolean
+          updated_at?: string
+          use_program?: boolean
+          wallet_masked?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_brl: number
+          created_at: string
+          id: string
+          invoice_id: string
+          status: string
+          tx_hash: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_brl: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          status: string
+          tx_hash?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_brl?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          merchant_id: string
+          name: string
+          price_brl: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          merchant_id: string
+          name: string
+          price_brl: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          merchant_id?: string
+          name?: string
+          price_brl?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receipts: {
+        Row: {
+          created_at: string
+          id: string
+          payment_id: string
+          receipt_data: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payment_id: string
+          receipt_data: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payment_id?: string
+          receipt_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
