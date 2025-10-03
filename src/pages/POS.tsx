@@ -55,6 +55,16 @@ export default function POS() {
     };
   }, [currentReceipt, refetch]);
 
+  // Sincroniza currentReceipt com receipts atualizados
+  useEffect(() => {
+    if (currentReceipt) {
+      const updatedReceipt = receipts.find(r => r.ref === currentReceipt.ref);
+      if (updatedReceipt && JSON.stringify(updatedReceipt) !== JSON.stringify(currentReceipt)) {
+        setCurrentReceipt(updatedReceipt);
+      }
+    }
+  }, [receipts, currentReceipt]);
+
   const handleGenerate = async (amount: number) => {
     const receipt = await createCharge(amount);
     if (receipt) {
