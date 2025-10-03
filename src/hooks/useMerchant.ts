@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabaseHelpers } from '@/lib/supabase-helpers';
 import { MerchantInfo, FeatureFlags } from '@/types/store';
 
 export function useMerchant() {
@@ -16,12 +17,10 @@ export function useMerchant() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get user's default merchant using helper function
-      // @ts-ignore - RPC function exists in database
-      const { data: merchantId, error: merchantIdError } = await supabase.rpc('current_merchant');
+      const merchantId = await supabaseHelpers.currentMerchant();
 
-      if (merchantIdError || !merchantId) {
-        console.error('Error getting current merchant:', merchantIdError);
+      if (!merchantId) {
+        console.error('No default merchant found');
         return;
       }
 
@@ -65,12 +64,10 @@ export function useMerchant() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get current merchant using helper function
-      // @ts-ignore - RPC function exists in database
-      const { data: merchantId, error: merchantIdError } = await supabase.rpc('current_merchant');
+      const merchantId = await supabaseHelpers.currentMerchant();
 
-      if (merchantIdError || !merchantId) {
-        console.error('Error getting current merchant:', merchantIdError);
+      if (!merchantId) {
+        console.error('No default merchant found');
         return;
       }
 
@@ -96,12 +93,10 @@ export function useMerchant() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get current merchant using helper function
-      // @ts-ignore - RPC function exists in database
-      const { data: merchantId, error: merchantIdError } = await supabase.rpc('current_merchant');
+      const merchantId = await supabaseHelpers.currentMerchant();
 
-      if (merchantIdError || !merchantId) {
-        console.error('Error getting current merchant:', merchantIdError);
+      if (!merchantId) {
+        console.error('No default merchant found');
         return;
       }
 

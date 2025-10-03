@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HeaderBar } from '@/components/HeaderBar';
 import { BottomTabs } from '@/components/BottomTabs';
 import { MoneyKeypad } from '@/components/MoneyKeypad';
@@ -9,11 +9,51 @@ import { Receipt } from '@/types/store';
 import { useTranslation } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { StatusChip } from '@/components/StatusChip';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function POS() {
   const { t } = useTranslation();
   const [currentReceipt, setCurrentReceipt] = useState<Receipt | null>(null);
-  const { receipts, createCharge } = useReceipts();
+  const { receipts, createCharge, refetch } = useReceipts();
+
+  // Realtime: assinar invoices e payments para atualizar automaticamente
+  useEffect(() => {
+    if (!currentReceipt) return;
+
+    const channel = supabase
+      .channel(`pos-${currentReceipt.ref}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'invoices',
+          filter: `ref=eq.${currentReceipt.ref}`,
+        },
+        () => {
+          console.log('Invoice updated, refetching...');
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payments',
+          filter: `invoice_id=eq.${currentReceipt.id}`,
+        },
+        () => {
+          console.log('Payment updated, refetching...');
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentReceipt, refetch]);
 
   const handleGenerate = async (amount: number) => {
     const receipt = await createCharge(amount);

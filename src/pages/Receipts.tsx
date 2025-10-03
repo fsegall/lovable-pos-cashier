@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HeaderBar } from '@/components/HeaderBar';
 import { BottomTabs } from '@/components/BottomTabs';
@@ -13,6 +13,7 @@ import { useTranslation } from '@/lib/i18n';
 import { Search, Download, FileText } from 'lucide-react';
 import { ReceiptStatus } from '@/types/store';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -26,8 +27,43 @@ export default function Receipts() {
   const [search, setSearch] = useState('');
   const [dateFilter, setDateFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<ReceiptStatus | 'all'>('all');
-  const { receipts } = useReceipts();
+  const { receipts, refetch } = useReceipts();
   const exportCsv = useStore((state) => state.exportCsv);
+
+  // Realtime: assinar invoices e payments para atualizar lista automaticamente
+  useEffect(() => {
+    const channel = supabase
+      .channel('receipts-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'invoices',
+        },
+        () => {
+          console.log('Invoices updated, refetching...');
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payments',
+        },
+        () => {
+          console.log('Payments updated, refetching...');
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   const handleExport = () => {
     toast.info('Disponível após integração');
