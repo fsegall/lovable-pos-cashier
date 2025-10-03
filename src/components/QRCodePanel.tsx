@@ -5,7 +5,8 @@ import { Receipt } from '@/types/store';
 import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Share2, Maximize2, Sun, X, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '@/lib/store';
+import { useReceipts } from '@/hooks/useReceipts';
+import { useMerchant } from '@/hooks/useMerchant';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,8 +19,8 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
   const [fullscreen, setFullscreen] = useState(false);
-  const updateReceiptStatus = useStore((state) => state.updateReceiptStatus);
-  const flags = useStore((state) => state.flags);
+  const { updateReceiptStatus } = useReceipts();
+  const { flags } = useMerchant();
 
   useEffect(() => {
     if (receipt.status !== 'pending') return;

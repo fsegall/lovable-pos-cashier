@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
+import { useMerchant } from '@/hooks/useMerchant';
 import { useStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 import { useState } from 'react';
@@ -14,14 +15,11 @@ import { Badge } from '@/components/ui/badge';
 
 export default function Settings() {
   const { t, lang, setLanguage } = useTranslation();
-  const merchant = useStore((state) => state.merchant);
-  const flags = useStore((state) => state.flags);
+  const { merchant, flags, updateMerchant, updateFlags } = useMerchant();
   const staff = useStore((state) => state.staff);
-  const updateMerchant = useStore((state) => state.updateMerchant);
-  const updateFlags = useStore((state) => state.updateFlags);
 
-  const [storeName, setStoreName] = useState(merchant.name);
-  const [category, setCategory] = useState(merchant.category || '');
+  const [storeName, setStoreName] = useState(merchant?.name || '');
+  const [category, setCategory] = useState(merchant?.category || '');
 
   const handleSave = () => {
     updateMerchant({ name: storeName, category });
@@ -88,7 +86,7 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <Label>{t('settings.wallet')}</Label>
-              <Input value={merchant.walletMasked} disabled />
+              <Input value={merchant?.walletMasked || ''} disabled />
             </div>
           </div>
         </Card>
@@ -105,7 +103,7 @@ export default function Settings() {
                 </div>
               </div>
               <Switch
-                checked={!flags.pixSettlement}
+                checked={!flags?.pixSettlement}
                 onCheckedChange={(checked) =>
                   updateFlags({ pixSettlement: !checked })
                 }
@@ -122,7 +120,7 @@ export default function Settings() {
                 </div>
               </div>
               <Switch
-                checked={flags.pixSettlement}
+                checked={flags?.pixSettlement || false}
                 onCheckedChange={(checked) =>
                   updateFlags({ pixSettlement: checked })
                 }
@@ -139,7 +137,7 @@ export default function Settings() {
                 </div>
               </div>
               <Switch
-                checked={flags.payWithBinance}
+                checked={flags?.payWithBinance || false}
                 onCheckedChange={(checked) =>
                   updateFlags({ payWithBinance: checked })
                 }
@@ -156,7 +154,7 @@ export default function Settings() {
                 </div>
               </div>
               <Switch
-                checked={flags.useProgram}
+                checked={flags?.useProgram || false}
                 onCheckedChange={(checked) => updateFlags({ useProgram: checked })}
               />
             </div>
@@ -171,7 +169,7 @@ export default function Settings() {
                 </div>
               </div>
               <Switch
-                checked={flags.demoMode}
+                checked={flags?.demoMode || false}
                 onCheckedChange={(checked) => updateFlags({ demoMode: checked })}
               />
             </div>

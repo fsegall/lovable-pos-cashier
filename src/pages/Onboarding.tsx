@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
+import { useMerchant } from '@/hooks/useMerchant';
 import { useStore } from '@/lib/store';
 import { toast } from 'sonner';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
@@ -14,8 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const updateMerchant = useStore((state) => state.updateMerchant);
-  const updateFlags = useStore((state) => state.updateFlags);
+  const { updateMerchant, updateFlags } = useMerchant();
   const completeOnboarding = useStore((state) => state.completeOnboarding);
 
   const [storeName, setStoreName] = useState('');

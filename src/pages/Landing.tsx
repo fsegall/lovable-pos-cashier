@@ -4,13 +4,13 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Wallet, Receipt, FileText, ArrowRight } from 'lucide-react';
-import { useStore } from '@/lib/store';
+import { useMerchant } from '@/hooks/useMerchant';
 import { useTranslation } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 
 export default function Landing() {
   const { t } = useTranslation();
-  const { flags, updateFlags } = useStore();
+  const { flags, updateFlags } = useMerchant();
 
   const features = [
     {
@@ -58,7 +58,7 @@ export default function Landing() {
 
             <div className="flex items-center gap-2">
               <Switch
-                checked={flags.demoMode}
+                checked={flags?.demoMode || false}
                 onCheckedChange={(checked) => updateFlags({ demoMode: checked })}
               />
               <span className="text-sm font-medium">{t('landing.demo')}</span>

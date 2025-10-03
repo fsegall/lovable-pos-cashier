@@ -4,7 +4,7 @@ import { BottomTabs } from '@/components/BottomTabs';
 import { MoneyKeypad } from '@/components/MoneyKeypad';
 import { QRCodePanel } from '@/components/QRCodePanel';
 import { Card } from '@/components/ui/card';
-import { useStore } from '@/lib/store';
+import { useReceipts } from '@/hooks/useReceipts';
 import { Receipt } from '@/types/store';
 import { useTranslation } from '@/lib/i18n';
 import { motion } from 'framer-motion';
@@ -13,12 +13,13 @@ import { StatusChip } from '@/components/StatusChip';
 export default function POS() {
   const { t } = useTranslation();
   const [currentReceipt, setCurrentReceipt] = useState<Receipt | null>(null);
-  const createCharge = useStore((state) => state.createCharge);
-  const receipts = useStore((state) => state.receipts);
+  const { receipts, createCharge } = useReceipts();
 
-  const handleGenerate = (amount: number) => {
-    const receipt = createCharge(amount);
-    setCurrentReceipt(receipt);
+  const handleGenerate = async (amount: number) => {
+    const receipt = await createCharge(amount);
+    if (receipt) {
+      setCurrentReceipt(receipt);
+    }
   };
 
   const handleClose = () => {

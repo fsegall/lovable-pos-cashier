@@ -1,14 +1,14 @@
 import { HeaderBar } from '@/components/HeaderBar';
 import { BottomTabs } from '@/components/BottomTabs';
 import { Card } from '@/components/ui/card';
-import { useStore } from '@/lib/store';
+import { useReceipts } from '@/hooks/useReceipts';
 import { useTranslation } from '@/lib/i18n';
 import { DollarSign, Receipt as ReceiptIcon, TrendingUp, Percent } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function Reports() {
   const { t } = useTranslation();
-  const receipts = useStore((state) => state.receipts);
+  const { receipts } = useReceipts();
 
   const confirmedReceipts = receipts.filter((r) => r.status === 'confirmed' || r.status === 'settled');
   const settledReceipts = receipts.filter((r) => r.status === 'settled');

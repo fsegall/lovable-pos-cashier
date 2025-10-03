@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import Auth from "./pages/Auth";
 import Landing from "./pages/Landing";
 import Onboarding from "./pages/Onboarding";
 import POS from "./pages/POS";
@@ -24,16 +26,17 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/pos" element={<POS />} />
-          <Route path="/receipts" element={<Receipts />} />
-          <Route path="/receipts/:id" element={<ReceiptDetail />} />
-          <Route path="/catalog" element={<Catalog />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/webhooks" element={<Webhooks />} />
-          <Route path="/help" element={<Help />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={<ProtectedRoute><Landing /></ProtectedRoute>} />
+          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+          <Route path="/pos" element={<ProtectedRoute><POS /></ProtectedRoute>} />
+          <Route path="/receipts" element={<ProtectedRoute><Receipts /></ProtectedRoute>} />
+          <Route path="/receipts/:id" element={<ProtectedRoute><ReceiptDetail /></ProtectedRoute>} />
+          <Route path="/catalog" element={<ProtectedRoute><Catalog /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/webhooks" element={<ProtectedRoute><Webhooks /></ProtectedRoute>} />
+          <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

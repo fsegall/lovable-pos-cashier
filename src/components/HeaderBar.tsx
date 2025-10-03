@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Moon, Sun, Globe, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useStore } from '@/lib/store';
+import { useMerchant } from '@/hooks/useMerchant';
 import { useTranslation } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import {
@@ -19,7 +19,7 @@ interface HeaderBarProps {
 
 export function HeaderBar({ showBack, title }: HeaderBarProps) {
   const navigate = useNavigate();
-  const flags = useStore((state) => state.flags);
+  const { flags } = useMerchant();
   const { lang, setLanguage } = useTranslation();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -51,7 +51,7 @@ export function HeaderBar({ showBack, title }: HeaderBarProps) {
             </Button>
           )}
           {title && <h1 className="text-lg font-semibold">{title}</h1>}
-          {flags.demoMode && <Badge variant="secondary">Demo</Badge>}
+          {flags && flags.demoMode && <Badge variant="secondary">Demo</Badge>}
         </div>
 
         <div className="flex items-center gap-2">

@@ -6,7 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useStore } from '@/lib/store';
+import { useProducts } from '@/hooks/useProducts';
+import { useReceipts } from '@/hooks/useReceipts';
 import { useTranslation } from '@/lib/i18n';
 import { Plus, Zap, Edit, Trash2, Package } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,10 +22,8 @@ import {
 export default function Catalog() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const products = useStore((state) => state.products);
-  const addProduct = useStore((state) => state.addProduct);
-  const deleteProduct = useStore((state) => state.deleteProduct);
-  const createCharge = useStore((state) => state.createCharge);
+  const { products, addProduct, deleteProduct } = useProducts();
+  const { createCharge } = useReceipts();
 
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
@@ -50,10 +49,10 @@ export default function Catalog() {
     setCategory('');
   };
 
-  const handleQuickCharge = (productId: string) => {
+  const handleQuickCharge = async (productId: string) => {
     const product = products.find((p) => p.id === productId);
     if (product) {
-      createCharge(product.priceBRL, [productId]);
+      await createCharge(product.priceBRL, [productId]);
       navigate('/pos');
       toast.success('Cobrança criada!');
     }

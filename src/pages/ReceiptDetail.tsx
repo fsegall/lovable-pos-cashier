@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { StatusChip } from '@/components/StatusChip';
-import { useStore } from '@/lib/store';
+import { useReceipts } from '@/hooks/useReceipts';
+import { useMerchant } from '@/hooks/useMerchant';
 import { useTranslation } from '@/lib/i18n';
 import { Share2, Printer, FileDown, Copy } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -14,9 +15,8 @@ export default function ReceiptDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const receipts = useStore((state) => state.receipts);
-  const merchant = useStore((state) => state.merchant);
-  const flags = useStore((state) => state.flags);
+  const { receipts } = useReceipts();
+  const { merchant, flags } = useMerchant();
 
   const receipt = receipts.find((r) => r.id === id);
 
@@ -60,7 +60,7 @@ export default function ReceiptDetail() {
         <Card className="p-6 mb-4 print:shadow-none">
           <div className="text-center mb-6">
             <div className="text-sm text-muted-foreground mb-2">
-              {merchant.name}
+              {merchant?.name || 'Loja'}
             </div>
             <div className="text-4xl font-bold mb-2">
               R$ {receipt.amountBRL.toFixed(2)}

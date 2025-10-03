@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { StatusChip } from '@/components/StatusChip';
+import { useReceipts } from '@/hooks/useReceipts';
 import { useStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 import { Search, Download, FileText } from 'lucide-react';
@@ -25,7 +26,7 @@ export default function Receipts() {
   const [search, setSearch] = useState('');
   const [dateFilter, setDateFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<ReceiptStatus | 'all'>('all');
-  const receipts = useStore((state) => state.receipts);
+  const { receipts } = useReceipts();
   const exportCsv = useStore((state) => state.exportCsv);
 
   const handleExport = () => {

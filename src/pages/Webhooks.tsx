@@ -1,15 +1,17 @@
 import { HeaderBar } from '@/components/HeaderBar';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useReceipts } from '@/hooks/useReceipts';
 import { useStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 import { Webhook, Clock, CheckCircle, DollarSign, XCircle } from 'lucide-react';
 
 export default function Webhooks() {
   const { t } = useTranslation();
+  const { receipts } = useReceipts();
   const getWebhookEvents = useStore((state) => state.getWebhookEvents);
 
-  const events = getWebhookEvents();
+  const events = getWebhookEvents(receipts);
 
   const getEventIcon = (type: string) => {
     if (type.includes('pending')) return Clock;
