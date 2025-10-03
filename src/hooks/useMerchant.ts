@@ -16,21 +16,25 @@ export function useMerchant() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get user's default merchant
-      const { data: members } = await supabase
-        .from('merchant_members')
-        .select('merchant_id')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
+      // Get user's default merchant using helper function
+      // @ts-ignore - RPC function exists in database
+      const { data: merchantId, error: merchantIdError } = await supabase.rpc('current_merchant');
 
-      if (!members) return;
+      if (merchantIdError || !merchantId) {
+        console.error('Error getting current merchant:', merchantIdError);
+        return;
+      }
 
-      const { data: merchantData } = await supabase
+      const { data: merchantData, error: merchantError } = await supabase
         .from('merchants')
         .select('*')
-        .eq('id', members.merchant_id)
+        .eq('id', merchantId)
         .single();
+
+      if (merchantError) {
+        console.error('Error fetching merchant data:', merchantError);
+        return;
+      }
 
       if (merchantData) {
         setMerchant({
@@ -61,14 +65,14 @@ export function useMerchant() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: members } = await supabase
-        .from('merchant_members')
-        .select('merchant_id')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
+      // Get current merchant using helper function
+      // @ts-ignore - RPC function exists in database
+      const { data: merchantId, error: merchantIdError } = await supabase.rpc('current_merchant');
 
-      if (!members) return;
+      if (merchantIdError || !merchantId) {
+        console.error('Error getting current merchant:', merchantIdError);
+        return;
+      }
 
       await supabase
         .from('merchants')
@@ -79,7 +83,7 @@ export function useMerchant() {
           email: updates.email,
           phone: updates.phone,
         })
-        .eq('id', members.merchant_id);
+        .eq('id', merchantId);
 
       await fetchMerchant();
     } catch (error) {
@@ -92,14 +96,14 @@ export function useMerchant() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: members } = await supabase
-        .from('merchant_members')
-        .select('merchant_id')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
+      // Get current merchant using helper function
+      // @ts-ignore - RPC function exists in database
+      const { data: merchantId, error: merchantIdError } = await supabase.rpc('current_merchant');
 
-      if (!members) return;
+      if (merchantIdError || !merchantId) {
+        console.error('Error getting current merchant:', merchantIdError);
+        return;
+      }
 
       await supabase
         .from('merchants')
@@ -109,7 +113,7 @@ export function useMerchant() {
           use_program: updates.useProgram,
           demo_mode: updates.demoMode,
         })
-        .eq('id', members.merchant_id);
+        .eq('id', merchantId);
 
       await fetchMerchant();
     } catch (error) {

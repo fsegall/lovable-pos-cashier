@@ -15,38 +15,29 @@ export function useReceipts() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: members } = await supabase
-        .from('merchant_members')
-        .select('merchant_id')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
+      // Use helper function to list receipts
+      // @ts-ignore - RPC function exists in database
+      const { data, error } = await supabase.rpc('list_receipts', {
+        _from: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // last 90 days
+        _to: new Date().toISOString(),
+      });
 
-      if (!members) return;
+      if (error) {
+        console.error('Error fetching receipts:', error);
+        return;
+      }
 
-      // Fetch invoices with their payments
-      const { data: invoices } = await supabase
-        .from('invoices')
-        .select(`
-          *,
-          payments (*)
-        `)
-        .eq('merchant_id', members.merchant_id)
-        .order('created_at', { ascending: false });
-
-      if (invoices) {
-        const receiptsData: Receipt[] = invoices.map((invoice) => {
-          const payment = invoice.payments?.[0];
-          return {
-            id: invoice.id,
-            amountBRL: Number(invoice.amount_brl),
-            createdAt: invoice.created_at,
-            status: invoice.status as Receipt['status'],
-            ref: invoice.ref,
-            txHash: payment?.tx_hash || undefined,
-            productIds: invoice.product_ids || undefined,
-          };
-        });
+      if (data) {
+        // @ts-ignore - data is array from RPC function
+        const receiptsData: Receipt[] = data.map((item: any) => ({
+          id: item.id,
+          amountBRL: Number(item.amount_brl),
+          createdAt: item.created_at,
+          status: item.status as Receipt['status'],
+          ref: item.ref,
+          txHash: item.tx_hash || undefined,
+          productIds: item.product_ids || undefined,
+        }));
         setReceipts(receiptsData);
       }
     } catch (error) {
@@ -61,48 +52,27 @@ export function useReceipts() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data: members } = await supabase
-        .from('merchant_members')
-        .select('merchant_id')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
-
-      if (!members) return null;
-
       const ref = `REF${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
-      // Create invoice
-      const { data: invoice, error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
-          merchant_id: members.merchant_id,
-          amount_brl: amount,
-          ref,
-          status: 'pending',
-          product_ids: productIds || [],
-        })
-        .select()
-        .single();
+      // Use helper function to create invoice + payment
+      // @ts-ignore - RPC function exists in database
+      const { data: invoiceId, error } = await supabase.rpc('create_invoice_with_payment', {
+        _amount_brl: amount,
+        _ref: ref,
+        _product_ids: productIds || [],
+      });
 
-      if (invoiceError || !invoice) {
-        console.error('Error creating invoice:', invoiceError);
+      if (error) {
+        console.error('Error creating invoice:', error);
         return null;
       }
-
-      // Create payment
-      await supabase.from('payments').insert({
-        invoice_id: invoice.id,
-        amount_brl: amount,
-        status: 'pending',
-      });
 
       await fetchReceipts();
 
       return {
-        id: invoice.id,
+        id: invoiceId,
         amountBRL: amount,
-        createdAt: invoice.created_at,
+        createdAt: new Date().toISOString(),
         status: 'pending' as const,
         ref,
         productIds,
@@ -119,24 +89,17 @@ export function useReceipts() {
     txHash?: string
   ) => {
     try {
-      // Update invoice
-      await supabase.from('invoices').update({ status }).eq('id', id);
+      // Use helper function to update payment status
+      // @ts-ignore - RPC function exists in database
+      const { error } = await supabase.rpc('update_payment_status', {
+        _invoice_id: id,
+        _new_status: status,
+        _tx_hash: txHash || null,
+      });
 
-      // Update payment
-      const { data: payments } = await supabase
-        .from('payments')
-        .select('id')
-        .eq('invoice_id', id)
-        .single();
-
-      if (payments) {
-        await supabase
-          .from('payments')
-          .update({
-            status,
-            ...(txHash && { tx_hash: txHash }),
-          })
-          .eq('id', payments.id);
+      if (error) {
+        console.error('Error updating receipt status:', error);
+        return;
       }
 
       await fetchReceipts();
