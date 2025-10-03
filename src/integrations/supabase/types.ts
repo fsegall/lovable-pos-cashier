@@ -260,7 +260,73 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_invoice_with_payment: {
+        Args: { _amount_brl: number; _product_ids: string[]; _ref: string }
+        Returns: {
+          amount_brl: number
+          invoice_id: string
+          payment_id: string
+          ref: string
+          status: string
+        }[]
+      }
+      current_merchant: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          created_at: string
+          demo_mode: boolean
+          email: string
+          id: string
+          logo_url: string
+          name: string
+          onboarding_complete: boolean
+          pay_with_binance: boolean
+          phone: string
+          pix_settlement: boolean
+          updated_at: string
+          use_program: boolean
+          wallet_masked: string
+        }[]
+      }
+      is_member: {
+        Args: { _merchant_id: string }
+        Returns: boolean
+      }
+      is_owner: {
+        Args: { _merchant_id: string }
+        Returns: boolean
+      }
+      list_receipts: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          amount_brl: number
+          created_at: string
+          id: string
+          payment_id: string
+          payment_status: string
+          ref: string
+          status: string
+          tx_hash: string
+          updated_at: string
+        }[]
+      }
+      mark_confirmed: {
+        Args: { _ref: string; _tx_hash: string }
+        Returns: undefined
+      }
+      mark_settled: {
+        Args: { _ref: string }
+        Returns: undefined
+      }
+      set_default_merchant: {
+        Args: { _merchant_id: string }
+        Returns: undefined
+      }
+      update_payment_status: {
+        Args: { _ref: string; _status: string; _tx_hash?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
