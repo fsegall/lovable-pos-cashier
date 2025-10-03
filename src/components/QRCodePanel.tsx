@@ -222,9 +222,17 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
           {flags?.demoMode && receipt.status === 'pending' && (
             <div className="space-y-2 pt-4 border-t">
               <div className="text-xs text-muted-foreground text-center mb-2">
-                Controles de Desenvolvimento
+                Controles de Desenvolvimento (demoMode: {String(flags.demoMode)})
               </div>
-              <Button variant="outline" size="sm" onClick={handleDevConfirm} className="w-full">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  console.log('🔴 BOTÃO CLICADO!', { receipt, flags });
+                  handleDevConfirm();
+                }} 
+                className="w-full"
+              >
                 Dev: Confirmar Pagamento
               </Button>
             </div>
