@@ -33,6 +33,7 @@ export const supabaseHelpers = {
       ref: item.ref,
       txHash: item.tx_hash || undefined,
       productIds: item.product_ids || undefined,
+      paymentId: item.payment_id || undefined,
     }));
   },
 
@@ -143,6 +144,23 @@ export const supabaseHelpers = {
 
     if (error) {
       console.error('Error setting default merchant:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Cria um recibo para um pagamento confirmado
+   */
+  async createReceipt(paymentId: string, receiptData: any): Promise<void> {
+    const { error } = await supabase
+      .from('receipts')
+      .insert({
+        payment_id: paymentId,
+        receipt_data: receiptData,
+      });
+
+    if (error) {
+      console.error('Error creating receipt:', error);
       throw error;
     }
   },

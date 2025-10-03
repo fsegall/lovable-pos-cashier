@@ -8,6 +8,7 @@ export type Receipt = {
   ref: string;
   txHash?: string;
   productIds?: string[];
+  paymentId?: string;
 };
 
 export type Product = {

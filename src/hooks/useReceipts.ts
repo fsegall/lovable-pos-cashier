@@ -64,6 +64,21 @@ export function useReceipts() {
   ) => {
     try {
       await supabaseHelpers.updatePaymentStatus(id, status, txHash);
+      
+      // Se confirmado, cria o recibo na tabela receipts
+      if (status === 'confirmed' && txHash) {
+        const receipt = receipts.find(r => r.ref === id);
+        if (receipt && receipt.paymentId) {
+          await supabaseHelpers.createReceipt(receipt.paymentId, {
+            ref: receipt.ref,
+            amount: receipt.amountBRL,
+            status: status,
+            txHash: txHash,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+      
       await fetchReceipts();
     } catch (error) {
       console.error('Error updating receipt status:', error);
