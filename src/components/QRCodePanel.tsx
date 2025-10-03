@@ -59,12 +59,12 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
   };
 
   const handleDevConfirm = () => {
-    updateReceiptStatus(receipt.id, 'confirmed', `${Math.random().toString(36).substr(2, 9)}...`);
+    updateReceiptStatus(receipt.ref, 'confirmed', `TX${Math.random().toString(36).substr(2, 9).toUpperCase()}`);
     toast.success('Pagamento confirmado!');
   };
 
   const handleDevSettle = () => {
-    updateReceiptStatus(receipt.id, 'settled', receipt.txHash);
+    updateReceiptStatus(receipt.ref, 'settled', receipt.txHash);
     toast.success('Pagamento liquidado!');
   };
 
