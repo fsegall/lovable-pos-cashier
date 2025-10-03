@@ -20,6 +20,7 @@ export function useReceipts() {
       const to = new Date();
       
       const receiptsData = await supabaseHelpers.listReceipts(from, to);
+      console.log('📊 Receipts fetched from DB:', receiptsData.map(r => ({ ref: r.ref, status: r.status })));
       setReceipts(receiptsData);
     } catch (error) {
       console.error('Error fetching receipts:', error);
