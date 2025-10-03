@@ -216,7 +216,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
             </Button>
           )}
 
-          {flags.demoMode && receipt.status === 'pending' && (
+          {flags?.demoMode && receipt.status === 'pending' && (
             <div className="space-y-2 pt-4 border-t">
               <div className="text-xs text-muted-foreground text-center mb-2">
                 Controles de Desenvolvimento
@@ -227,7 +227,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
             </div>
           )}
 
-          {flags.demoMode && receipt.status === 'confirmed' && (
+          {flags?.demoMode && receipt.status === 'confirmed' && (
             <div className="space-y-2 pt-4 border-t">
               <Button variant="outline" size="sm" onClick={handleDevSettle} className="w-full">
                 Dev: Liquidar
