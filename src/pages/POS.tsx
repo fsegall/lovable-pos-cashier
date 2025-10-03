@@ -59,8 +59,13 @@ export default function POS() {
   useEffect(() => {
     if (currentReceipt) {
       const updatedReceipt = receipts.find(r => r.ref === currentReceipt.ref);
-      if (updatedReceipt && JSON.stringify(updatedReceipt) !== JSON.stringify(currentReceipt)) {
-        setCurrentReceipt(updatedReceipt);
+      if (updatedReceipt) {
+        console.log('Current receipt status:', currentReceipt.status);
+        console.log('Updated receipt status:', updatedReceipt.status);
+        if (JSON.stringify(updatedReceipt) !== JSON.stringify(currentReceipt)) {
+          console.log('Updating currentReceipt with new data');
+          setCurrentReceipt(updatedReceipt);
+        }
       }
     }
   }, [receipts, currentReceipt]);
