@@ -71,11 +71,6 @@ export function PaymentAssistant() {
 
   return (
     <Card className="flex flex-col h-[600px] p-4">
-      <div className="flex items-center gap-2 pb-4 border-b mb-4">
-        <Bot className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold">Assistente de Pagamentos</h3>
-      </div>
-
       <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
         <div className="space-y-4">
           {messages.map((msg, idx) => (
