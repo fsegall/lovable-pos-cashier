@@ -21,6 +21,7 @@ export function useReceipts() {
       
       const receiptsData = await supabaseHelpers.listReceipts(from, to);
       console.log('📊 Receipts fetched from DB:', receiptsData.map(r => ({ ref: r.ref, status: r.status })));
+      console.log('📊 Full receipts data:', JSON.stringify(receiptsData, null, 2));
       setReceipts(receiptsData);
     } catch (error) {
       console.error('Error fetching receipts:', error);
