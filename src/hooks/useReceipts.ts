@@ -14,15 +14,17 @@ export function useReceipts() {
   const fetchReceipts = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return [];
 
       const from = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000); // last 90 days
       const to = new Date();
       
       const receiptsData = await supabaseHelpers.listReceipts(from, to);
       setReceipts(receiptsData);
+      return receiptsData;
     } catch (error) {
       console.error('Error fetching receipts:', error);
+      return [];
     } finally {
       setLoading(false);
     }
@@ -35,22 +37,17 @@ export function useReceipts() {
 
       const ref = `REF${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
-      const invoiceId = await supabaseHelpers.createInvoiceWithPayment(
+      await supabaseHelpers.createInvoiceWithPayment(
         amount,
         ref,
         productIds || []
       );
 
-      await fetchReceipts();
+      const updatedReceipts = await fetchReceipts();
 
-      return {
-        id: invoiceId,
-        amountBRL: amount,
-        createdAt: new Date().toISOString(),
-        status: 'pending' as const,
-        ref,
-        productIds,
-      };
+      // Retorna o receipt recém-criado da lista atualizada
+      const newReceipt = updatedReceipts.find(r => r.ref === ref);
+      return newReceipt || null;
     } catch (error) {
       console.error('Error creating charge:', error);
       return null;
