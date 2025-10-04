@@ -20,8 +20,6 @@ export function useReceipts() {
       const to = new Date();
       
       const receiptsData = await supabaseHelpers.listReceipts(from, to);
-      console.log('📊 Receipts fetched from DB:', receiptsData.map(r => ({ ref: r.ref, status: r.status })));
-      console.log('📊 Full receipts data:', JSON.stringify(receiptsData, null, 2));
       setReceipts(receiptsData);
     } catch (error) {
       console.error('Error fetching receipts:', error);
@@ -65,14 +63,11 @@ export function useReceipts() {
     txHash?: string
   ) => {
     try {
-      console.log('🔵 updateReceiptStatus called with:', { ref, status, txHash });
       await supabaseHelpers.updatePaymentStatus(ref, status, txHash);
-      console.log('🟢 supabaseHelpers.updatePaymentStatus completed');
       
       // Se confirmado, cria o recibo na tabela receipts
       if (status === 'confirmed' && txHash) {
         const receipt = receipts.find(r => r.ref === ref);
-        console.log('🔵 Creating receipt for payment:', { receipt, paymentId: receipt?.paymentId });
         if (receipt && receipt.paymentId) {
           await supabaseHelpers.createReceipt(receipt.paymentId, {
             ref: receipt.ref,
@@ -81,15 +76,12 @@ export function useReceipts() {
             txHash: txHash,
             timestamp: new Date().toISOString(),
           });
-          console.log('🟢 Receipt created');
         }
       }
       
-      console.log('🔵 Refetching receipts...');
       await fetchReceipts();
-      console.log('🟢 Receipts refetched');
     } catch (error) {
-      console.error('❌ Error updating receipt status:', error);
+      console.error('Error updating receipt status:', error);
     }
   };
 

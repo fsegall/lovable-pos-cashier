@@ -60,9 +60,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
 
   const handleDevConfirm = async () => {
     const txHash = `TX${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    console.log('🔵 handleDevConfirm called with:', { ref: receipt.ref, status: 'confirmed', txHash });
     await updateReceiptStatus(receipt.ref, 'confirmed', txHash);
-    console.log('🟢 updateReceiptStatus completed');
     toast.success('Pagamento confirmado!');
   };
 
@@ -227,10 +225,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => {
-                  console.log('🔴 BOTÃO CLICADO!', { receipt, flags });
-                  handleDevConfirm();
-                }} 
+                onClick={handleDevConfirm} 
                 className="w-full"
               >
                 Dev: Confirmar Pagamento

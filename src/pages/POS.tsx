@@ -59,25 +59,12 @@ export default function POS() {
   useEffect(() => {
     if (currentReceipt) {
       const updatedReceipt = receipts.find(r => r.ref === currentReceipt.ref);
-      console.log('🔍 Looking for receipt with ref:', currentReceipt.ref);
-      console.log('🔍 Found receipt:', updatedReceipt);
-      console.log('🔍 All receipts refs:', receipts.map(r => r.ref));
-      if (updatedReceipt) {
-        console.log('Current receipt status:', currentReceipt.status);
-        console.log('Updated receipt status:', updatedReceipt.status);
-        console.log('🔍 Current receipt full:', JSON.stringify(currentReceipt));
-        console.log('🔍 Updated receipt full:', JSON.stringify(updatedReceipt));
-        if (JSON.stringify(updatedReceipt) !== JSON.stringify(currentReceipt)) {
-          console.log('Updating currentReceipt with new data');
-          setCurrentReceipt(updatedReceipt);
-        } else {
-          console.log('⚠️ Receipts are identical, not updating');
-        }
-      } else {
-        console.log('⚠️ Updated receipt not found in receipts array!');
+      if (updatedReceipt && updatedReceipt.status !== currentReceipt.status) {
+        console.log('🔄 Status changed:', currentReceipt.status, '->', updatedReceipt.status);
+        setCurrentReceipt(updatedReceipt);
       }
     }
-  }, [receipts, currentReceipt]);
+  }, [receipts]);
 
   const handleGenerate = async (amount: number) => {
     const receipt = await createCharge(amount);
