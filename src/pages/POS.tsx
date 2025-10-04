@@ -20,6 +20,7 @@ export default function POS() {
   useEffect(() => {
     if (!currentReceipt) return;
 
+    console.log('🔵 Setting up realtime for receipt:', currentReceipt.ref);
     const channel = supabase
       .channel(`pos-${currentReceipt.ref}`)
       .on(
@@ -30,8 +31,8 @@ export default function POS() {
           table: 'invoices',
           filter: `ref=eq.${currentReceipt.ref}`,
         },
-        () => {
-          console.log('Invoice updated, refetching...');
+        (payload) => {
+          console.log('🔴 REALTIME: Invoice updated!', payload);
           refetch();
         }
       )
@@ -43,14 +44,17 @@ export default function POS() {
           table: 'payments',
           filter: `invoice_id=eq.${currentReceipt.id}`,
         },
-        () => {
-          console.log('Payment updated, refetching...');
+        (payload) => {
+          console.log('🔴 REALTIME: Payment updated!', payload);
           refetch();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('🟢 Realtime subscription status:', status);
+      });
 
     return () => {
+      console.log('🔵 Removing realtime channel');
       supabase.removeChannel(channel);
     };
   }, [currentReceipt, refetch]);
