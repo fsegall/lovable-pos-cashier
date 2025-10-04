@@ -24,17 +24,23 @@ export const supabaseHelpers = {
 
     if (!data || !Array.isArray(data)) return [];
 
+    console.log('🔵 RAW data from list_receipts RPC:', data[0]); // Log first item to see structure
+
     // @ts-ignore - data is array from RPC function
-    return data.map((item: any) => ({
-      id: item.id,
-      amountBRL: Number(item.amount_brl),
-      createdAt: item.created_at,
-      status: item.status as Receipt['status'],
-      ref: item.ref,
-      txHash: item.tx_hash || undefined,
-      productIds: item.product_ids || undefined,
-      paymentId: item.payment_id || undefined,
-    }));
+    return data.map((item: any) => {
+      const mapped = {
+        id: item.id,
+        amountBRL: Number(item.amount_brl),
+        createdAt: item.created_at,
+        status: item.status as Receipt['status'],
+        ref: item.ref,
+        txHash: item.tx_hash || undefined,
+        productIds: item.product_ids || undefined,
+        paymentId: item.payment_id || undefined,
+      };
+      console.log('🟡 Mapped receipt:', { ref: mapped.ref, paymentId: mapped.paymentId });
+      return mapped;
+    });
   },
 
   /**
