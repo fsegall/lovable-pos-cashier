@@ -12,6 +12,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { PaymentAssistant } from '@/components/PaymentAssistant';
 
 export default function Settings() {
   const { t, lang, setLanguage } = useTranslation();
@@ -31,6 +32,12 @@ export default function Settings() {
       <HeaderBar title={t('settings.title')} />
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-2xl space-y-6">
+        {/* AI Assistant */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">🤖 Assistente de Pagamentos</h3>
+          <PaymentAssistant />
+        </Card>
+
         {/* Store Settings */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">{t('settings.store')}</h3>
