@@ -67,9 +67,14 @@ export function useReceipts() {
       await supabaseHelpers.updatePaymentStatus(ref, status, txHash);
       console.log('🟢 updatePaymentStatus completed');
       
-      // Se confirmado, cria o recibo na tabela receipts
+      // Refetch PRIMEIRO para ter os dados atualizados
+      console.log('🔵 About to refetch receipts...');
+      const updatedReceipts = await fetchReceipts();
+      console.log('🟢 Receipts refetched, new count:', updatedReceipts.length);
+      
+      // AGORA busca o receipt na lista atualizada
       if (status === 'confirmed' && txHash) {
-        const receipt = receipts.find(r => r.ref === ref);
+        const receipt = updatedReceipts.find(r => r.ref === ref);
         console.log('🔵 Looking for receipt to create:', { ref, found: !!receipt, paymentId: receipt?.paymentId });
         if (receipt && receipt.paymentId) {
           await supabaseHelpers.createReceipt(receipt.paymentId, {
@@ -82,10 +87,6 @@ export function useReceipts() {
           console.log('🟢 Receipt created');
         }
       }
-      
-      console.log('🔵 About to refetch receipts...');
-      await fetchReceipts();
-      console.log('🟢 Receipts refetched, new count:', receipts.length);
     } catch (error) {
       console.error('❌ Error updating receipt status:', error);
     }
