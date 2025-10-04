@@ -57,11 +57,17 @@ export default function POS() {
 
   // Sincroniza currentReceipt com receipts atualizados
   useEffect(() => {
+    console.log('✅ NEW VERSION RUNNING - useEffect triggered, receipts count:', receipts.length);
     if (currentReceipt) {
+      console.log('📍 Current receipt ref:', currentReceipt.ref, 'status:', currentReceipt.status);
       const updatedReceipt = receipts.find(r => r.ref === currentReceipt.ref);
+      console.log('📍 Updated receipt found:', updatedReceipt?.ref, 'status:', updatedReceipt?.status);
+      
       if (updatedReceipt && updatedReceipt.status !== currentReceipt.status) {
-        console.log('🔄 Status changed:', currentReceipt.status, '->', updatedReceipt.status);
+        console.log('🔄 STATUS CHANGED:', currentReceipt.status, '->', updatedReceipt.status);
         setCurrentReceipt(updatedReceipt);
+      } else {
+        console.log('⚠️ No status change detected');
       }
     }
   }, [receipts]);
