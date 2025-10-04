@@ -7,6 +7,7 @@ import { Wallet, Receipt, FileText, ArrowRight } from 'lucide-react';
 import { useMerchant } from '@/hooks/useMerchant';
 import { useTranslation } from '@/lib/i18n';
 import { motion } from 'framer-motion';
+import { BottomTabs } from '@/components/BottomTabs';
 
 export default function Landing() {
   const { t } = useTranslation();
@@ -31,8 +32,8 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
-      <div className="container mx-auto px-4 py-16 max-w-6xl">
+    <div className="min-h-screen flex flex-col pb-16 md:pb-0 bg-gradient-to-br from-background via-primary/5 to-accent/5">
+      <div className="container mx-auto px-4 py-16 max-w-6xl flex-1">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,6 +103,8 @@ export default function Landing() {
           </Card>
         </motion.div>
       </div>
+
+      <BottomTabs />
     </div>
   );
 }
