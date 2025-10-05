@@ -7,7 +7,8 @@ import { json } from "../_shared/responses.ts";
 // import { findTransactionSignature, validateTransfer } from "npm:@solana/pay@0.4.0";
 
 serve(async (req) => {
-  const { reference } = new URL(req.url).searchParams;
+  const searchParams = new URL(req.url).searchParams;
+  const reference = searchParams.get('reference');
   if (!reference) return json({ error: 'Missing reference' }, 400);
 
   const supabase = adminClient();

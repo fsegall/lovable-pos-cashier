@@ -5,7 +5,8 @@ import { pdf } from "../_shared/responses.ts";
 import { json } from "../_shared/responses.ts";
 
 serve(async (req) => {
-  const { paymentId } = new URL(req.url).searchParams;
+  const searchParams = new URL(req.url).searchParams;
+  const paymentId = searchParams.get('paymentId');
   if (!paymentId) return json({ error: 'Missing paymentId' }, 400);
 
   const supabase = adminClient();

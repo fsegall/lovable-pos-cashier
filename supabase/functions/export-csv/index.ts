@@ -4,7 +4,8 @@ import { userClient } from "../_shared/supabase.ts";
 import { csv } from "../_shared/responses.ts";
 
 serve(async (req) => {
-  const { date } = new URL(req.url).searchParams;
+  const searchParams = new URL(req.url).searchParams;
+  const date = searchParams.get('date');
   const targetDate = date ? new Date(date) : new Date();
   
   // Calcular range do dia
