@@ -41,10 +41,21 @@ export function useAuth() {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    // Log detalhado para debug
+    if (error) {
+      console.error('Login error details:', {
+        message: error.message,
+        status: error.status,
+        code: error.code,
+        name: error.name
+      });
+    }
+    
     return { error };
   };
 
