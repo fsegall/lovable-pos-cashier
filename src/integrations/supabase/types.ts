@@ -289,6 +289,23 @@ export type Database = {
           wallet_masked: string
         }[]
       }
+      get_merchant_info: {
+        Args: { _merchant_id: string }
+        Returns: {
+          category: string
+          created_at: string
+          demo_mode: boolean
+          id: string
+          logo_url: string
+          name: string
+          onboarding_complete: boolean
+          pay_with_binance: boolean
+          pix_settlement: boolean
+          updated_at: string
+          use_program: boolean
+          wallet_masked: string
+        }[]
+      }
       is_member: {
         Args: { _merchant_id: string }
         Returns: boolean
