@@ -330,6 +330,35 @@ Minimum functions:
   * Exports CSV using SQL function or SELECT.
   * Direct query to database via Service Role.
 
+### Voice (OpenAI Realtime)
+
+To enable push-to-talk voice (STT + LLM + TTS) without exposing your API key, use the included Edge Function `openai-realtime-token`.
+
+1) Configure Edge Functions env (local or dashboard):
+
+```env
+# supabase/functions/.env
+OPENAI_API_KEY=sk-...
+# Optional overrides
+OPENAI_REALTIME_MODEL=gpt-4o-realtime-preview-2024-12-17
+OPENAI_REALTIME_VOICE=verse
+```
+
+2) Serve locally and test:
+
+```bash
+npx supabase functions serve --env-file supabase/functions/.env --no-verify-jwt
+curl -X POST http://127.0.0.1:54321/functions/v1/openai-realtime-token -H "Content-Type: application/json" -d '{}'
+```
+
+3) Frontend usage:
+
+Render `<VoiceInput />` (already included) or add the mic button in the header (already wired in `HeaderBar.tsx`). The component fetches an ephemeral token and opens a Realtime session.
+
+Notes:
+- Do not prefix envs with `SUPABASE_` (the runtime ignores them).
+- After changing envs, restart `functions serve` or redeploy.
+
 ### Edge Functions Deploy
 
 ```bash
