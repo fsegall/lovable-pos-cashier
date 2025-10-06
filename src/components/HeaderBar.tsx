@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Globe, ArrowLeft } from 'lucide-react';
+import { Moon, Sun, Globe, ArrowLeft, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useMerchant } from '@/hooks/useMerchant';
 import { useTranslation } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { VoiceInput } from '@/components/VoiceInput';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +57,16 @@ export function HeaderBar({ showBack, title }: HeaderBarProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Voice assistant">
+                <Mic className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-0">
+              <VoiceInput />
+            </PopoverContent>
+          </Popover>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
