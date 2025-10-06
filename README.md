@@ -342,6 +342,10 @@ OPENAI_API_KEY=sk-...
 # Optional overrides
 OPENAI_REALTIME_MODEL=gpt-4o-realtime-preview-2024-12-17
 OPENAI_REALTIME_VOICE=verse
+
+# Optional: local Supabase aliases (avoid conflicts with other tooling)
+SUPABASE_LOCAL_URL=http://127.0.0.1:54321
+SUPABASE_LOCAL_SERVICE_ROLE_KEY=...
 ```
 
 2) Serve locally and test:
