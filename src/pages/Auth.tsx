@@ -36,13 +36,19 @@ export default function Auth() {
       } else {
         const { error } = await signIn(email, password);
         if (error) {
-          toast.error(error.message);
+          console.error('Erro de login:', error);
+          toast.error(error.message || 'Erro ao fazer login');
         } else {
+          console.log('Login bem-sucedido, redirecionando...');
           toast.success('Login realizado com sucesso!');
-          navigate('/');
+          // Pequeno delay para garantir que o estado foi atualizado
+          setTimeout(() => {
+            navigate('/');
+          }, 100);
         }
       }
     } catch (error) {
+      console.error('Erro no handleSubmit:', error);
       toast.error('Erro ao processar requisição');
     } finally {
       setLoading(false);
