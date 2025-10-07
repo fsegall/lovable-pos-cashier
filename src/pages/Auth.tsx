@@ -22,7 +22,13 @@ export default function Auth() {
       if (isSignUp) {
         const { error } = await signUp(email, password);
         if (error) {
-          toast.error(error.message);
+          // Detecta se usuário já está registrado
+          if (error.message?.includes('already registered') || error.status === 422) {
+            toast.error('Este email já está registrado. Faça login ao invés disso.');
+            setIsSignUp(false);
+          } else {
+            toast.error(error.message);
+          }
         } else {
           toast.success('Conta criada! Faça login para continuar.');
           setIsSignUp(false);
