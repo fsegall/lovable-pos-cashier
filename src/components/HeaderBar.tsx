@@ -7,6 +7,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { VoiceInput } from '@/components/VoiceInput';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +58,9 @@ export function HeaderBar({ showBack, title }: HeaderBarProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Solana Wallet Button */}
+          <WalletMultiButton />
+          
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Voice assistant">
