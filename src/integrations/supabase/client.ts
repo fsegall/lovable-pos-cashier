@@ -6,13 +6,15 @@ import type { Database } from './types';
 const SUPABASE_URL = 
   import.meta.env.VITE_SUPABASE_URL ||
   import.meta.env.SUPABASE_URL ||
-  import.meta.env.VITE_SUPABASE_PROJECT_URL;
+  import.meta.env.VITE_SUPABASE_PROJECT_URL ||
+  'https://niocfujcwmbwictdpfsn.supabase.co';
 
 const SUPABASE_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
   import.meta.env.SUPABASE_ANON_KEY ||
-  import.meta.env.VITE_SUPABASE_PROJECT_ANON_KEY;
+  import.meta.env.VITE_SUPABASE_PROJECT_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pb2NmdWpjd21id2ljdGRwZnNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzkzOTQsImV4cCI6MjA3NTA1NTM5NH0.4DdbL340eBQ7Tfd9HJZaqMwFYs4reVFU_k-NFz78zYE';
 
 // Validate required environment variables with helpful error messages
 if (!SUPABASE_URL) {
