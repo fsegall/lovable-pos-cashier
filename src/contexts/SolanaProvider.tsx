@@ -5,7 +5,6 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  BackpackWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 
@@ -32,7 +31,8 @@ export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
-      new BackpackWalletAdapter(),
+      // BackpackWalletAdapter requires separate package: @solana/wallet-adapter-backpack
+      // Add it later if needed
     ],
     [network]
   );
