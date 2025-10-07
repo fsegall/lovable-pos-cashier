@@ -9,6 +9,8 @@ import { useReceipts } from '@/hooks/useReceipts';
 import { useMerchant } from '@/hooks/useMerchant';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { SolanaPayQR } from '@/components/SolanaPayQR';
+import { getMerchantRecipient } from '@/lib/solana-config';
 
 interface QRCodePanelProps {
   receipt: Receipt;
@@ -19,8 +21,15 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
   const [fullscreen, setFullscreen] = useState(false);
+  const [useSolanaPay, setUseSolanaPay] = useState(false);
   const { updateReceiptStatus } = useReceipts();
   const { flags } = useMerchant();
+
+  // Check if Solana Pay is configured
+  useEffect(() => {
+    const merchantRecipient = getMerchantRecipient();
+    setUseSolanaPay(!!merchantRecipient);
+  }, []);
 
   useEffect(() => {
     if (receipt.status !== 'pending') return;
@@ -104,6 +113,43 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
   const StatusIcon = status.icon;
 
   const qrContent = `solana:pay?amount=${receipt.amountBRL}&ref=${receipt.ref}`;
+
+  // Render Solana Pay if configured, otherwise fallback to mock
+  if (useSolanaPay && receipt.status === 'pending') {
+    const merchantRecipient = getMerchantRecipient();
+    if (!merchantRecipient) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+      >
+        <SolanaPayQR
+          recipient={merchantRecipient.toString()}
+          amount={receipt.amountBRL}
+          label={`Payment ${receipt.ref}`}
+          message={`Pay R$ ${receipt.amountBRL.toFixed(2)}`}
+          onPaymentConfirmed={(txHash) => {
+            updateReceiptStatus(receipt.ref, 'confirmed', txHash);
+          }}
+          onExpired={() => {
+            updateReceiptStatus(receipt.id, 'error');
+          }}
+        />
+        <div className="mt-4 flex gap-2">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Cancelar
+          </Button>
+          {flags?.demoMode && (
+            <Button variant="outline" onClick={handleDevConfirm} className="flex-1">
+              Dev: Confirmar
+            </Button>
+          )}
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <AnimatePresence>
