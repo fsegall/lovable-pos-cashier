@@ -24,12 +24,14 @@ serve(async (req) => {
   if (!reference && req.method === 'POST') {
     try {
       const body = await req.json();
+      console.log('📥 Received POST body:', body);
       reference = body.reference;
     } catch (e) {
-      // Invalid JSON, ignore
+      console.error('❌ Failed to parse JSON body:', e);
     }
   }
   
+  console.log('🔍 Looking for invoice with reference:', reference);
   if (!reference) return json({ error: 'Missing reference' }, 400);
 
   const supabase = adminClient();
@@ -37,14 +39,22 @@ serve(async (req) => {
 
   try {
     // Buscar invoice por reference
-    const { data: invoice } = await supabase
+    const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
       .select('*')
       .eq('ref', reference)
       .single();
 
-    if (!invoice) return json({ error: 'Invoice not found' }, 404);
-    if (invoice.status !== 'pending') return json({ status: invoice.status });
+    console.log('📋 Invoice query result:', { invoice, error: invoiceError });
+
+    if (!invoice) {
+      console.log('❌ Invoice not found for reference:', reference);
+      return json({ error: 'Invoice not found', reference }, 404);
+    }
+    if (invoice.status !== 'pending') {
+      console.log('✅ Invoice already processed:', invoice.status);
+      return json({ status: invoice.status });
+    }
 
     // TODO: Implementar validação real com @solana/pay
     if (!DEMO_MODE) {
