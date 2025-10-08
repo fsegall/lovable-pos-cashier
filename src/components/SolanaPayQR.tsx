@@ -13,6 +13,7 @@ export type PaymentStatus = 'generating' | 'active' | 'expired' | 'paid' | 'erro
 interface SolanaPayQRProps {
   recipient: string;
   amount: number; // Amount in BRL (will be converted)
+  existingReference?: string; // Use existing invoice reference instead of generating new one
   label?: string;
   message?: string;
   onPaymentConfirmed?: (txHash: string) => void;
@@ -23,6 +24,7 @@ interface SolanaPayQRProps {
 export function SolanaPayQR({
   recipient,
   amount,
+  existingReference,
   label,
   message,
   onPaymentConfirmed,
@@ -55,7 +57,8 @@ export function SolanaPayQR({
       if (request) {
         setPaymentRequest(request);
         setStatus('active');
-        startPolling(request.reference.toString());
+        // Use existingReference (invoice ref) for polling instead of generated PublicKey
+        startPolling(existingReference || request.reference.toString());
       } else {
         setStatus('error');
       }

@@ -133,6 +133,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
         <SolanaPayQR
           recipient={merchantRecipient.toString()}
           amount={receipt.amountBRL}
+          existingReference={receipt.ref}
           label={`Payment ${receipt.ref}`}
           message={`Pay R$ ${receipt.amountBRL.toFixed(2)}`}
           onPaymentConfirmed={(txHash) => {
