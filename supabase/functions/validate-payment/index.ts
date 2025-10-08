@@ -17,8 +17,19 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Accept reference from query params OR body
   const searchParams = new URL(req.url).searchParams;
-  const reference = searchParams.get('reference');
+  let reference = searchParams.get('reference');
+  
+  if (!reference && req.method === 'POST') {
+    try {
+      const body = await req.json();
+      reference = body.reference;
+    } catch (e) {
+      // Invalid JSON, ignore
+    }
+  }
+  
   if (!reference) return json({ error: 'Missing reference' }, 400);
 
   const supabase = adminClient();
