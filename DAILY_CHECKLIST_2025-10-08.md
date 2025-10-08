@@ -13,6 +13,15 @@
 
 **Progresso:** 85% → 90% (meta do dia)
 
+### 🎛️ Feature Flags (Adicionar ao .env)
+```bash
+# Feature toggles
+FEATURE_OFFRAMP_CIRCLE=true
+FEATURE_OFFRAMP_WISE=true
+FEATURE_JUPITER_SWAP=false  # Day 3
+FEATURE_ONCHAIN_VALIDATION=true  # Hoje mudamos de false para true
+```
+
 ---
 
 ## 🎯 Estratégia Cypherpunk
@@ -180,7 +189,7 @@ Implementar off-ramp multi-currency (BRL, USD, EUR, etc) via Wise.
 ## 🗃️ Fase 4: Database Schema Updates (1h)
 
 ### Objetivo
-Adicionar suporte para múltiplos settlement providers no banco.
+Adicionar suporte para múltiplos settlement providers no banco com telemetria.
 
 ### Tasks
 
@@ -203,6 +212,12 @@ Adicionar suporte para múltiplos settlement providers no banco.
   ALTER TABLE public.payments ADD COLUMN IF NOT EXISTS
     settlement_fee numeric(10,2);
   
+  ALTER TABLE public.payments ADD COLUMN IF NOT EXISTS
+    settlement_requested_at timestamptz;
+  
+  ALTER TABLE public.payments ADD COLUMN IF NOT EXISTS
+    settlement_completed_at timestamptz;
+  
   -- Create webhook_events table for audit
   CREATE TABLE IF NOT EXISTS public.webhook_events (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -211,8 +226,13 @@ Adicionar suporte para múltiplos settlement providers no banco.
     payload jsonb NOT NULL,
     signature text,
     processed boolean DEFAULT false,
+    processing_time_ms integer,
     created_at timestamptz DEFAULT now()
   );
+  
+  -- Create index for webhook lookups
+  CREATE INDEX IF NOT EXISTS webhook_events_provider_type_idx 
+    ON public.webhook_events(provider, event_type, created_at DESC);
   ```
 
 #### 4.2 RPC Functions
@@ -226,16 +246,60 @@ Adicionar suporte para múltiplos settlement providers no banco.
     _amount numeric DEFAULT NULL,
     _fee numeric DEFAULT NULL
   )
+  RETURNS void
+  LANGUAGE plpgsql
+  SECURITY DEFINER
+  SET search_path = public
+  AS $$
+  BEGIN
+    UPDATE public.payments p
+    SET 
+      status = 'settled',
+      settlement_provider = _provider,
+      settlement_id = _settlement_id,
+      settlement_currency = _currency,
+      settlement_amount = _amount,
+      settlement_fee = _fee,
+      settlement_completed_at = now(),
+      settled_at = now()
+    FROM public.invoices i
+    WHERE p.invoice_id = i.id
+      AND i.ref = _ref
+      AND i.merchant_id = app.current_merchant();
+  END;
+  $$;
   ```
 
-#### 4.3 Apply Migration
+#### 4.3 Dashboard View (ChatGPT suggestion!)
+- [ ] Criar view `settlement_dashboard_view`
+  ```sql
+  CREATE OR REPLACE VIEW app.settlement_dashboard AS
+  SELECT 
+    DATE(p.created_at) as date,
+    COUNT(*) as total_payments,
+    SUM(CASE WHEN p.status = 'confirmed' THEN 1 ELSE 0 END) as crypto_only,
+    SUM(CASE WHEN p.status = 'settled' THEN 1 ELSE 0 END) as settled_to_fiat,
+    SUM(i.amount_brl) as total_volume_brl,
+    SUM(p.settlement_amount) as settled_volume,
+    SUM(p.settlement_fee) as total_fees,
+    AVG(EXTRACT(EPOCH FROM (p.settlement_completed_at - p.settlement_requested_at))) as avg_settlement_time_seconds
+  FROM public.payments p
+  JOIN public.invoices i ON i.id = p.invoice_id
+  WHERE i.merchant_id = app.current_merchant()
+    AND p.created_at >= now() - interval '30 days'
+  GROUP BY DATE(p.created_at)
+  ORDER BY date DESC;
+  ```
+
+#### 4.4 Apply Migration
 - [ ] `supabase db reset` (local)
 - [ ] Verificar schema no Studio
 - [ ] Testar RPCs
+- [ ] Testar view com dados mock
 
-**DoD:** Schema suporta múltiplos providers com tracking completo
+**DoD:** Schema suporta múltiplos providers com tracking completo + telemetria
 
-**Commit:** `feat: add settlement provider tracking to database schema`
+**Commit:** `feat: add settlement provider tracking with telemetry and dashboard view`
 
 ---
 
@@ -274,7 +338,62 @@ Interface para merchant escolher se quer/quando fazer off-ramp.
 
 ---
 
-## 🧪 Fase 6: Testing & Integration (1-2h)
+## 🔒 Fase 6: Segurança & Confiabilidade (1h)
+
+### Objetivo
+Garantir que settlement providers sejam seguros e confiáveis.
+
+### Tasks
+
+#### 6.1 HMAC Validation
+- [ ] Implementar validação Circle webhook
+  - [ ] Verificar `X-Circle-Signature` header
+  - [ ] Comparar com hash calculado
+  - [ ] Rejeitar se inválido (401)
+
+- [ ] Implementar validação Wise webhook
+  - [ ] Verificar `X-Signature` header
+  - [ ] Algoritmo específico da Wise
+  - [ ] Rejeitar se inválido (401)
+
+#### 6.2 Idempotência
+- [ ] Usar `invoiceRef` como idempotency key
+- [ ] Prevenir duplicate payouts
+- [ ] Check no banco antes de criar payout
+- [ ] Retornar existing payout se já existe
+
+#### 6.3 Rate Limiting
+- [ ] Adicionar rate limit nas Edge Functions públicas
+  - [ ] Webhook endpoints: 100 req/min por IP
+  - [ ] Payout endpoints: 10 req/min por merchant
+  - [ ] Usar Supabase Edge Function rate limiting
+
+#### 6.4 Monitoring
+- [ ] Log todas as chamadas de API (Circle/Wise)
+- [ ] Track latência (P50, P95, P99)
+- [ ] Alert em errors 5xx
+- [ ] Dashboard no Supabase Logs
+
+**DoD:** Sistema seguro contra replay attacks, rate abuse, e falhas
+
+**Commit:** `feat: add security layer with HMAC validation and rate limiting`
+
+---
+
+## 🧪 Fase 7: Testing E2E (1-2h)
+
+### Tabela de Testes (ChatGPT suggestion!)
+
+| # | Etapa | Ação | Esperado | Status |
+|---|-------|------|----------|--------|
+| 1 | **Solana Pay** | Cliente paga USDC via QR | Tx confirmada < 10s | [ ] |
+| 2 | **Circle Payout** | Merchant clica "Settle USD" | Payout created | [ ] |
+| 3 | **Circle Webhook** | Aguardar webhook | Status → `settled` | [ ] |
+| 4 | **Wise Quote** | Solicitar quote BRL | Fees calculados | [ ] |
+| 5 | **Wise Transfer** | Executar transfer | Status → `processing` | [ ] |
+| 6 | **Wise Webhook** | Aguardar callback | Status → `settled` | [ ] |
+| 7 | **Dashboard** | Abrir Reports | Métricas corretas | [ ] |
+| 8 | **Crypto-Only** | Não fazer settle | Balance mantido | [ ] |
 
 ### Manual Testing
 
@@ -283,9 +402,10 @@ Interface para merchant escolher se quer/quando fazer off-ramp.
 - [ ] Receber USDC na wallet
 - [ ] Clicar "Settle to Bank (USD)"
 - [ ] Verificar payout criado no Circle sandbox
-- [ ] Aguardar webhook
+- [ ] Aguardar webhook (pode levar 1-2 min)
 - [ ] Status muda para "settled"
 - [ ] Verificar no Circle dashboard
+- [ ] Checar `webhook_events` table
 
 #### Test 2: Wise Off-Ramp (BRL)
 - [ ] Criar cobrança R$ 50
@@ -296,18 +416,25 @@ Interface para merchant escolher se quer/quando fazer off-ramp.
 - [ ] Verificar transfer no Wise sandbox
 - [ ] Aguardar webhook
 - [ ] Status "settled"
+- [ ] Checar tempo de settlement (avg)
 
 #### Test 3: Crypto-Only (No Settlement)
 - [ ] Criar cobrança
 - [ ] Receber crypto
 - [ ] NÃO fazer settle
 - [ ] Verificar balance acumula
-- [ ] Merchant mantém crypto ✅
+- [ ] Dashboard mostra "crypto_only" ✅
 
-#### Test 4: Webhook Replay
-- [ ] Simular webhook duplicado
-- [ ] Verificar idempotência
+#### Test 4: Webhook Replay Attack
+- [ ] Capturar webhook legítimo
+- [ ] Reenviar (replay)
+- [ ] Verificar: rejeitado ou idempotente
 - [ ] Não duplicar settlement
+
+#### Test 5: Invalid Signature
+- [ ] Enviar webhook com signature errada
+- [ ] Verificar: 401 Unauthorized
+- [ ] Não processar evento
 
 ### Edge Cases
 - [ ] Saldo insuficiente para payout
@@ -315,29 +442,82 @@ Interface para merchant escolher se quer/quando fazer off-ramp.
 - [ ] Network timeout durante payout
 - [ ] Provider API down (fallback behavior)
 - [ ] Currency não suportada
+- [ ] Amount abaixo do mínimo
 
-**DoD:** Todos os fluxos testados e funcionando no sandbox
+**DoD:** Todos os fluxos testados e funcionando no sandbox com segurança validada
 
 ---
 
-## 📝 Fase 7: Documentation (30 min)
+## 📊 Fase 8: Métricas & Telemetria (30 min)
+
+### Objetivo
+Coletar métricas para demonstrar performance no hackathon.
+
+### Tasks
+
+#### 8.1 Performance Metrics
+- [ ] Implementar tracking de:
+  - [ ] **TPS** (transactions per second) on-chain
+  - [ ] **Latência P95** (validate-payment)
+  - [ ] **Settlement time** (requested → completed)
+  - [ ] **Success rate** por provider
+  - [ ] **Fee efetiva** por rota
+
+#### 8.2 Dashboard Cards
+- [ ] Card: "Avg Settlement Time"
+  - [ ] Circle: X minutes
+  - [ ] Wise: Y minutes
+  
+- [ ] Card: "Total Fees Paid"
+  - [ ] Breakdown por provider
+  - [ ] % do volume
+
+- [ ] Card: "Crypto vs Fiat"
+  - [ ] % mantido em crypto
+  - [ ] % convertido para fiat
+
+#### 8.3 Logs Estruturados
+- [ ] Adicionar structured logging
+  ```typescript
+  console.log(JSON.stringify({
+    timestamp: new Date().toISOString(),
+    level: 'info',
+    service: 'circle-payout',
+    action: 'payout_created',
+    invoiceRef: '...',
+    amount: 100,
+    latency_ms: 234,
+  }));
+  ```
+
+**DoD:** Métricas coletadas e exibidas no dashboard
+
+**Commit:** `feat: add telemetry and performance metrics tracking`
+
+---
+
+## 📝 Fase 9: Documentation (30 min)
 
 - [ ] Atualizar `README.md`
   - [ ] Seção "Settlement Providers"
   - [ ] Env vars: CIRCLE_API_KEY, WISE_API_KEY
   - [ ] Configuração de webhooks
+  - [ ] Feature flags
 
-- [ ] Atualizar `SETTLEMENT_ARCHITECTURE.md`
+- [ ] Atualizar `SETTLEMENT_ARCHITECTURE_BR.md`
   - [ ] Adicionar exemplos de código real implementado
   - [ ] Screenshots do sandbox
+  - [ ] Métricas de performance
 
 - [ ] Atualizar `.env.example`
   - [ ] Adicionar variáveis Circle e Wise
+  - [ ] Feature flags
 
 - [ ] Criar `SETTLEMENT_TESTING.md`
-  - [ ] Guia de setup sandbox
-  - [ ] Test scenarios
-  - [ ] Troubleshooting
+  - [ ] Guia de setup sandbox (Circle + Wise)
+  - [ ] Test scenarios com expected results
+  - [ ] Troubleshooting comum
+  - [ ] Webhook testing com ngrok
 
 **Commit:** `docs: add settlement provider setup and testing guides`
 
