@@ -2,8 +2,8 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { adminClient } from "../_shared/supabase.ts";
 import { json } from "../_shared/responses.ts";
+// @ts-ignore - Deno npm imports not recognized by TypeScript
 import { Connection, PublicKey } from "npm:@solana/web3.js@1.95.3";
-import BigNumber from "npm:bignumber.js@9.1.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
