@@ -40,13 +40,18 @@
 
 * **Frontend**: Vite + React + TypeScript + Tailwind (shadcn/ui), PWA, i18n EN/pt‑BR, dark mode.
 * **Dados & Auth**: Supabase (Postgres + **RLS** + Realtime), migrations com `merchants`, `products`, `invoices`, `payments` e **VIEW `receipts`**.
+* **Wallet UX (Diferencial)**:
+  * **Tradicional**: Solana Wallet Adapter (Phantom, Solflare) para usuários crypto-native
+  * **Passkey/Embedded**: Phantom Embedded Wallets ou Web3Auth para onboarding sem seed phrase
+  * **Login social**: Google/Apple/Email → wallet MPC automática
+  * **Zero friction**: biometria em vez de 12 palavras
 * **Edge Functions (Deno)**:
 
   * `validate-payment`: `@solana/pay` (`findTransactionSignature` + `validateTransfer`), grava `confirmed` via RPC.
   * `settlement-webhook`: valida HMAC e marca `settled`.
   * `get-receipt-pdf`: proxy de PDF (ex.: Transfero OAuth).
   * `export-csv`: CSV diário sob RLS do usuário.
-* **Abstração Settlement**: interface `SettlementProvider` (`mock` | `transfero` | `stripe` | `circle`). UI nunca mostra marca do PSP; apenas “PIX settlement (opcional)”.
+* **Abstração Settlement**: interface `SettlementProvider` (`mock` | `transfero` | `stripe` | `circle`). UI nunca mostra marca do PSP; apenas "PIX settlement (opcional)".
 
 ---
 
@@ -219,12 +224,84 @@ DEMO_MODE=true
 
 ---
 
+## 🔑 Passkey/Embedded Wallets (Diferencial Competitivo)
+
+### Por que isso importa?
+**Problema:** Seed phrases de 12 palavras assustam usuários não-técnicos e são a #1 barreira de adoção crypto.
+
+**Solução:** Passkeys/Embedded Wallets com login social.
+
+### Opções de Implementação
+
+#### 1. Phantom Embedded Wallets (MPC)
+```typescript
+import { PhantomEmbeddedProvider } from '@phantom-labs/embedded-wallet';
+
+const provider = new PhantomEmbeddedProvider({
+  appId: 'your-phantom-app-id', // Registrar em phantom.app/developers
+});
+
+// Login com Google/Apple/Email
+await provider.login('google');
+// Wallet MPC criada automaticamente, sem seed phrase!
+```
+
+**Benefícios:**
+- ✅ Zero install (funciona no navegador)
+- ✅ Login social (Google/Apple/Email)
+- ✅ Biometria (Face ID/Touch ID)
+- ✅ MPC não-custodial (chave dividida)
+- 🔗 **Docs:** https://phantom.app/learn/blog/introducing-phantom-embedded-wallets
+
+#### 2. Web3Auth (Multi-Provider)
+```bash
+npm install @web3auth/modal @web3auth/solana-provider
+```
+
+**Benefícios:**
+- ✅ 15+ métodos de login (Google, Facebook, Twitter, Discord, SMS, Email)
+- ✅ WebAuthn/Passkey nativo
+- ✅ Multi-chain (Solana, Ethereum, etc)
+- ✅ Customizável
+- 🔗 **Docs:** https://web3auth.io/docs/sdk/pnp/web/solana
+
+#### 3. Magic (ex-Magic Link)
+```bash
+npm install magic-sdk @magic-sdk/solana
+```
+
+**Benefícios:**
+- ✅ Email magic links (passwordless)
+- ✅ SMS OTP
+- ✅ Social login
+- ✅ WebAuthn/Passkeys
+- 🔗 **Docs:** https://magic.link/docs/solana
+
+### Roadmap de Implementação
+
+**Semana C (20-26 OUT):**
+- [ ] Registrar app no Phantom Developers
+- [ ] Integrar Phantom Embedded Wallets
+- [ ] Adicionar botão "Login with Google" no header
+- [ ] Testar fluxo: Google login → auto-create wallet → fazer pagamento
+- [ ] Documentar no README
+
+**UX Final:**
+- **Crypto-native users:** "Connect Wallet" (Phantom extension)
+- **New users:** "Login with Google" (embedded wallet, sem extension)
+- **Ambos:** mesma experiência de pagamento depois do login!
+
+---
+
 ## 📈 Métricas para o vídeo/demo
 
 * **TTF‑QR** (tempo até exibir o QR)
 * **TTF‑Confirm** (tempo até confirmar on‑chain)
 * **Taxa de sucesso por wallet** (Phantom/Backpack/Solflare)
 * **% Settled** (quando settlement ligado)
+* **🆕 Onboarding time** (tradicional vs passkey)
+  - Wallet tradicional: ~5 min (install extension + criar wallet + backup seed)
+  - Passkey/Embedded: ~30s (login Google + biometria) ⚡
 
 ---
 

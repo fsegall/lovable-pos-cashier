@@ -53,13 +53,20 @@
 
 ## 💳 POS (Frontend)
 
-* [ ] **Multi-wallet UX**: Phantom / Backpack / Solflare via **Wallet Adapter** + fallback "copiar link"
-* [ ] **Geração de `reference`** como **PublicKey** (não UUID)
-* [ ] **QR Solana Pay**: `encodeURL({ recipient, amount, reference, splToken? })`
-* [ ] **Expiração de QR** (5–10 min) + botão **Regenerar**
-* [ ] **Indicadores de estado**: `pending → confirmed → settled → error`
+* [x] **Multi-wallet UX**: Phantom / Solflare via **Wallet Adapter** ✅ IMPLEMENTADO
+  * [x] WalletMultiButton no header
+  * [x] Auto-connect suportado
+  * [ ] **Passkey/Embedded Wallets** (roadmap) - Phantom Embedded ou Web3Auth
+    * [ ] Login social (Google/Apple/Email)
+    * [ ] MPC wallet sem seed phrase
+    * [ ] Biometria (Face ID/Touch ID)
+    * [ ] Zero friction onboarding
+* [x] **Geração de `reference`** como **PublicKey** ✅ IMPLEMENTADO
+* [x] **QR Solana Pay**: `encodeURL({ recipient, amount, reference, splToken? })` ✅ IMPLEMENTADO
+* [x] **Expiração de QR** (10 min) + botão **Regenerar** ✅ IMPLEMENTADO
+* [x] **Indicadores de estado**: `pending → confirmed → settled → error` ✅ IMPLEMENTADO
 * [ ] **Impressão**: CSS **thermal-like** no recibo + botão **Print/Share**
-* [ ] **Realtime**: assinar **invoices** e **payments** (não a view)
+* [x] **Realtime**: assinar **invoices** e **payments** ✅ IMPLEMENTADO
 
 **DoD**: do valor ao **QR** < 2s; confirmação **visual** em tempo real quando `confirmed` chegar.
 
