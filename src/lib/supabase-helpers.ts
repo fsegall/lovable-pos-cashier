@@ -49,13 +49,15 @@ export const supabaseHelpers = {
   async createInvoiceWithPayment(
     amountBRL: number,
     ref: string,
-    productIds: string[] = []
+    productIds: string[] = [],
+    reference?: string
   ): Promise<string> {
     // @ts-ignore - RPC function exists in database
     const { data, error } = await supabase.rpc('create_invoice_with_payment', {
       _amount_brl: amountBRL,
       _ref: ref,
       _product_ids: productIds,
+      _reference: reference || null,
     });
 
     if (error) {

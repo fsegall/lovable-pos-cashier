@@ -39,11 +39,23 @@ export function useReceipts() {
       if (!user) return null;
 
       const ref = `REF${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+      
+      // Generate Solana Pay reference (PublicKey) for on-chain validation
+      // We'll import this dynamically to avoid issues if not available
+      let solanaReference: string | undefined;
+      try {
+        const { Keypair } = await import('@solana/web3.js');
+        solanaReference = Keypair.generate().publicKey.toString();
+        console.log('🔑 Generated Solana reference:', solanaReference);
+      } catch (e) {
+        console.warn('⚠️ Could not generate Solana reference:', e);
+      }
 
       await supabaseHelpers.createInvoiceWithPayment(
         amount,
         ref,
-        productIds || []
+        productIds || [],
+        solanaReference
       );
 
       const updatedReceipts = await fetchReceipts();
