@@ -3,30 +3,46 @@
 > Guia tático de execução até as submissões **Colosseum (Global)** e **Superteam Brazil (Side Track)**.
 > Timezone: **America/Sao_Paulo**. Atualize este arquivo durante a sprint.
 
-## 📊 Progresso Atual (6 OUT 2025)
+## 📊 Progresso Atual (7 OUT 2025 - Atualizado)
 
-**✅ CONCLUÍDO:**
+**✅ CONCLUÍDO (Semana A):**
 - **Setup & Infra**: Supabase configurado, Types gerados, 6 Edge Functions implementadas
 - **Edge Functions**: Todas as 6 functions (validate-payment, settlement-webhook, get-receipt-pdf, export-csv, chat-assistant, openai-realtime-token)
 - **Banco & RPCs**: Migrations, RLS, RPCs, índices implementados
 - **Voice & Chat**: VoiceInput.tsx e ChatAssistant.tsx com OpenAI Realtime integrado
-- **Test Plan**: Core functionality testada e funcionando
+- **🆕 Solana Integration**: Wallet Adapter + Solana Pay QR + Polling implementados
+- **🆕 BRZ Support**: Configuração completa + precise-money utils
+- **🆕 Demo Mode**: Fluxo end-to-end funcionando
+- **🆕 Documentation**: Hackathon guide, devnet setup, passkey roadmap
 
-**🔄 EM ANDAMENTO:**
-- Integração Solana (Wallet Adapter, Solana Pay)
+**🔄 PRÓXIMOS (Semana B - 8-14 OUT):**
+- Validação on-chain REAL com @solana/pay
+- Transfero PIX sandbox (Brasil)
+- Circle/Stripe USDC sandbox (Global)
+- Webhook HMAC real
+- PDF oficial de recibos
+
+**🔮 FUTURO (Semana C/D):**
+- Passkey/Embedded Wallets (login social)
 - QuickCharge e Templates de produtos
-- Keyboard shortcuts e Performance optimization
+- Keyboard shortcuts
+- Programa Solana on-chain (opcional)
+- Vídeos + Submission
 
-**📈 PROGRESSO GERAL: ~65% concluído**
+**📈 PROGRESSO GERAL: ~85% concluído** 🚀
 
 ---
 
 ## 📆 Datas & Marcos
 
-* [ ] **Semana A (6–12 OUT)** — **On‑chain & Wallets** + POS polido + recibo thermal
-* [ ] **Semana B (13–19 OUT)** — SettlementProvider (mock→Transfero ou outros PSPs), webhook HMAC, PDF
-* [ ] **Semana C (20–26 OUT)** — (Opcional) programa on‑chain + auto‑swap Jupiter + métricas
-* [ ] **Semana D (27–30 OUT)** — Polimento, **vídeos**, landing, submissões
+* [x] **Semana A (6–12 OUT)** — **On‑chain & Wallets** + POS polido ✅ **COMPLETO!**
+  * [x] Wallet Adapter (Phantom, Solflare) ✅
+  * [x] Solana Pay QR generation ✅
+  * [x] Demo mode end-to-end ✅
+  * [x] tBRZ devnet setup ✅
+* [ ] **Semana B (8–14 OUT)** — Validação real + SettlementProviders (Transfero PIX, Circle/Stripe USDC)
+* [ ] **Semana C (15–20 OUT)** — Passkey/Embedded Wallets + Polimento + (Opcional) programa on‑chain
+* [ ] **Semana D (21–30 OUT)** — Vídeos, landing, submissões
 
 > **Deadlines sugeridas**: Colosseum/Global **30 OUT**; Side Track BR **alinhado** (ver plataforma). Confirme as datas oficiais na semana D.
 
