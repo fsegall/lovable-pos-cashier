@@ -1,5 +1,9 @@
 project_id = "niocfujcwmbwictdpfsn"
 
+[api]
+# Expose app schema for RPC functions
+schemas = ["public", "graphql_public", "app"]
+
 [functions.chat-assistant]
 verify_jwt = true
 

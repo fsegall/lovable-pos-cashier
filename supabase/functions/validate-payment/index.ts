@@ -1,4 +1,5 @@
 // supabase/functions/validate-payment/index.ts
+// @ts-ignore - Deno npm imports not recognized by TypeScript
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { adminClient } from "../_shared/supabase.ts";
 import { json } from "../_shared/responses.ts";
