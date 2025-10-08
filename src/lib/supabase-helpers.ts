@@ -11,8 +11,7 @@ export const supabaseHelpers = {
    * Lista receipts do merchant atual no período especificado
    */
   async listReceipts(from: Date, to: Date): Promise<Receipt[]> {
-    // @ts-ignore - RPC function exists in database
-    const { data, error } = await supabase.rpc('list_receipts', {
+    const { data, error } = await supabase.schema('app').rpc('list_receipts', {
       _from: from.toISOString(),
       _to: to.toISOString(),
     });
@@ -52,12 +51,12 @@ export const supabaseHelpers = {
     productIds: string[] = [],
     reference?: string
   ): Promise<string> {
-    // @ts-ignore - RPC function exists in database
-    const { data, error } = await supabase.rpc('create_invoice_with_payment', {
+    // Call RPC in app schema
+    const { data, error } = await supabase.schema('app').rpc('create_invoice_with_payment', {
       _amount_brl: amountBRL,
       _ref: ref,
       _product_ids: productIds,
-      _reference: reference || null,
+      _reference: reference,
     });
 
     if (error) {
@@ -77,8 +76,7 @@ export const supabaseHelpers = {
     status: Receipt['status'],
     txHash?: string
   ): Promise<void> {
-    // @ts-ignore - RPC function exists in database
-    const { error } = await supabase.rpc('update_payment_status', {
+    const { error } = await supabase.schema('app').rpc('update_payment_status', {
       _ref: ref,
       _status: status,
       _tx_hash: txHash || null,
@@ -94,8 +92,7 @@ export const supabaseHelpers = {
    * Marca invoice como confirmed (com tx_hash)
    */
   async markConfirmed(ref: string, txHash: string): Promise<void> {
-    // @ts-ignore - RPC function exists in database
-    const { error } = await supabase.rpc('mark_confirmed', {
+    const { error } = await supabase.schema('app').rpc('mark_confirmed', {
       _ref: ref,
       _tx_hash: txHash,
     });
@@ -110,8 +107,7 @@ export const supabaseHelpers = {
    * Marca invoice como settled
    */
   async markSettled(ref: string): Promise<void> {
-    // @ts-ignore - RPC function exists in database
-    const { error } = await supabase.rpc('mark_settled', {
+    const { error } = await supabase.schema('app').rpc('mark_settled', {
       _ref: ref,
     });
 
@@ -125,8 +121,7 @@ export const supabaseHelpers = {
    * Retorna o merchant padrão do usuário atual
    */
   async currentMerchant(): Promise<string | null> {
-    // @ts-ignore - RPC function exists in database
-    const { data, error } = await supabase.rpc('current_merchant');
+    const { data, error } = await supabase.schema('app').rpc('current_merchant');
 
     if (error) {
       console.error('Error getting current merchant:', error);
@@ -145,8 +140,7 @@ export const supabaseHelpers = {
    * Define merchant padrão do usuário
    */
   async setDefaultMerchant(merchantId: string): Promise<void> {
-    // @ts-ignore - RPC function exists in database
-    const { error } = await supabase.rpc('set_default_merchant', {
+    const { error } = await supabase.schema('app').rpc('set_default_merchant', {
       _merchant_id: merchantId,
     });
 
