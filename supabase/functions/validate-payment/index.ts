@@ -34,6 +34,14 @@ serve(async (req) => {
   console.log('🔍 Looking for invoice with reference:', reference);
   if (!reference) return json({ error: 'Missing reference' }, 400);
 
+  // Debug: check available env vars
+  console.log('🔧 Environment check:', {
+    hasSupabaseUrl: !!Deno.env.get('SUPABASE_URL'),
+    hasServiceRole: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+    hasAnon: !!Deno.env.get('SUPABASE_ANON_KEY'),
+    demoMode: Deno.env.get('DEMO_MODE'),
+  });
+
   const supabase = adminClient();
   const DEMO_MODE = Deno.env.get('DEMO_MODE') === 'true';
 
@@ -83,8 +91,8 @@ serve(async (req) => {
 
     // Marcar como confirmado
     const { error } = await supabase.rpc('mark_confirmed', { 
-      ref: reference, 
-      tx_hash: DEMO_MODE ? `DEMO_${Date.now()}` : 'VALIDATED_TX_HASH' 
+      _ref: reference, 
+      _tx_hash: DEMO_MODE ? `DEMO_${Date.now()}` : 'VALIDATED_TX_HASH' 
     });
 
     if (error) throw error;
