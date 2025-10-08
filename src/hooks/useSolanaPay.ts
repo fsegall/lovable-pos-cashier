@@ -73,11 +73,17 @@ export function useSolanaPay() {
   const validatePayment = useCallback(
     async (reference: string): Promise<{ status: string; tx?: string } | null> => {
       try {
-        // Get Supabase URL from environment
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL;
+        // Use local Supabase if running on localhost, otherwise use production
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const supabaseUrl = isLocal 
+          ? (import.meta.env.VITE_SUPABASE_LOCAL_URL || 'http://127.0.0.1:54321')
+          : (import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL);
+        
         if (!supabaseUrl) {
           throw new Error('Supabase URL not configured');
         }
+
+        console.log('🔍 Validating payment via:', supabaseUrl);
 
         const response = await fetch(`${supabaseUrl}/functions/v1/validate-payment`, {
           method: 'POST',
