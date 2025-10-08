@@ -6,7 +6,17 @@ import { json } from "../_shared/responses.ts";
 // TODO: Uncomment when @solana/pay is available on Deno
 // import { findTransactionSignature, validateTransfer } from "npm:@solana/pay@0.4.0";
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   const searchParams = new URL(req.url).searchParams;
   const reference = searchParams.get('reference');
   if (!reference) return json({ error: 'Missing reference' }, 400);

@@ -28,6 +28,11 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
   // Check if Solana Pay is configured
   useEffect(() => {
     const merchantRecipient = getMerchantRecipient();
+    console.log('🔍 Checking Solana Pay config:', {
+      merchantRecipient: merchantRecipient?.toString(),
+      hasRecipient: !!merchantRecipient,
+      env: import.meta.env.VITE_MERCHANT_RECIPIENT,
+    });
     setUseSolanaPay(!!merchantRecipient);
   }, []);
 
