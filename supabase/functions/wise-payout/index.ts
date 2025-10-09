@@ -97,8 +97,9 @@ serve(async (req) => {
     // Step 2: Create transfer
     console.log('💸 Step 2: Creating transfer...');
     
-    // Generate numeric customer transaction ID (Wise requires numbers only)
-    const customerTransactionId = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+    // Generate UUID for customer transaction ID (Wise requires UUID format)
+    const customerTransactionId = crypto.randomUUID();
+    console.log('🔑 Generated customerTransactionId:', customerTransactionId);
     
     const transferResponse = await fetch(
       `${WISE_API_BASE}/v1/transfers`,
