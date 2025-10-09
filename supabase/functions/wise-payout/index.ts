@@ -8,6 +8,7 @@ import { json } from "../_shared/responses.ts";
 const WISE_API_TOKEN = Deno.env.get('WISE_API_TOKEN');
 const WISE_API_BASE = Deno.env.get('WISE_API_BASE') || 'https://api.sandbox.transferwise.tech';
 const WISE_PROFILE_ID = Deno.env.get('WISE_PROFILE_ID');
+const WISE_RECIPIENT_ID = Deno.env.get('WISE_RECIPIENT_ID');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,6 +42,10 @@ serve(async (req) => {
 
     if (!WISE_API_TOKEN || !WISE_PROFILE_ID) {
       return json({ error: 'Wise API credentials not configured' }, 500);
+    }
+
+    if (!WISE_RECIPIENT_ID) {
+      return json({ error: 'Wise recipient ID not configured - create a recipient first' }, 500);
     }
 
     // Get user's merchant context
@@ -91,15 +96,19 @@ serve(async (req) => {
 
     // Step 2: Create transfer
     console.log('💸 Step 2: Creating transfer...');
+    
+    // Generate numeric customer transaction ID (Wise requires numbers only)
+    const customerTransactionId = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+    
     const transferResponse = await fetch(
       `${WISE_API_BASE}/v1/transfers`,
       {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({
-          targetAccount: parseInt(recipientId),
+          targetAccount: parseInt(WISE_RECIPIENT_ID),
           quoteUuid: quote.id,
-          customerTransactionId: invoiceRef,
+          customerTransactionId: customerTransactionId,
           details: {
             reference: `Invoice ${invoiceRef}`,
           },
