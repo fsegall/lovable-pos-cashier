@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
+import { createTransferInstruction, getAssociatedTokenAddress } from '@solana/spl-token';
 import BigNumber from 'bignumber.js';
 import { useSolanaPay, PaymentRequest } from '@/hooks/useSolanaPay';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Copy, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
+import { Loader2, Copy, RefreshCw, CheckCircle2, Clock, Wallet } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getBrzMint } from '@/lib/solana-config';
 import { DebugPanel } from '@/components/DebugPanel';
@@ -37,9 +39,12 @@ export function SolanaPayQR({
   const [status, setStatus] = useState<PaymentStatus>('generating');
   const [timeRemaining, setTimeRemaining] = useState(expirationMinutes * 60);
   const [pollInterval, setPollInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isSending, setIsSending] = useState(false);
   
   const { createPaymentRequest, validatePayment, isGenerating, error } = useSolanaPay();
   const { toast } = useToast();
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
 
   const generateQR = async () => {
     setStatus('generating');
@@ -167,6 +172,101 @@ export function SolanaPayQR({
     }
   };
 
+  const handlePayWithWallet = async () => {
+    if (!publicKey || !paymentRequest) {
+      toast({
+        title: "Wallet não conectada",
+        description: "Por favor, conecte sua wallet primeiro",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const recipientPubkey = new PublicKey(recipient);
+      const brzMint = getBrzMint();
+
+      if (!brzMint) {
+        throw new Error('BRZ mint not configured');
+      }
+
+      console.log('💰 Sending payment:', {
+        from: publicKey.toString(),
+        to: recipient,
+        amount: amount,
+        mint: brzMint.toString(),
+        reference: paymentRequest.reference.toString(),
+      });
+
+      // Get ATAs
+      const fromAta = await getAssociatedTokenAddress(brzMint, publicKey);
+      const toAta = await getAssociatedTokenAddress(brzMint, recipientPubkey);
+
+      // Convert amount to token units (6 decimals for tBRZ)
+      const tokenAmount = Math.floor(amount * 1_000_000); // 18.00 → 18000000
+
+      console.log('🔢 Token amount (minor units):', tokenAmount);
+
+      // Create transaction
+      const transaction = new Transaction();
+      
+      // Add transfer instruction with memo (reference)
+      transaction.add(
+        createTransferInstruction(
+          fromAta,
+          toAta,
+          publicKey,
+          tokenAmount,
+          [],
+          undefined
+        )
+      );
+
+      // Add reference as a memo
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: paymentRequest.reference,
+          lamports: 0, // Just for memo/reference tracking
+        })
+      );
+
+      // Send transaction
+      const signature = await sendTransaction(transaction, connection);
+      console.log('✅ Transaction sent:', signature);
+
+      toast({
+        title: "Pagamento enviado!",
+        description: "Aguardando confirmação on-chain...",
+      });
+
+      // Wait for confirmation
+      const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+      
+      if (confirmation.value.err) {
+        throw new Error('Transaction failed');
+      }
+
+      console.log('✅ Transaction confirmed:', signature);
+      
+      setStatus('paid');
+      if (onPaymentConfirmed) {
+        onPaymentConfirmed(signature);
+      }
+
+    } catch (err) {
+      console.error('❌ Payment error:', err);
+      toast({
+        title: "Erro no pagamento",
+        description: err instanceof Error ? err.message : 'Falha ao enviar transação',
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   if (status === 'error') {
     return (
       <Alert variant="destructive">
@@ -240,9 +340,30 @@ export function SolanaPayQR({
       
       {paymentRequest && status === 'active' && (
         <CardFooter className="flex flex-col gap-2">
-          <div className="flex gap-2 w-full">
+          {publicKey && (
             <Button
               variant="default"
+              className="w-full"
+              onClick={handlePayWithWallet}
+              disabled={isSending}
+            >
+              {isSending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Pagar com Wallet Conectada
+                </>
+              )}
+            </Button>
+          )}
+          
+          <div className="flex gap-2 w-full">
+            <Button
+              variant="outline"
               className="flex-1"
               onClick={handleOpenPhantom}
             >
@@ -264,8 +385,12 @@ export function SolanaPayQR({
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
+          
           <p className="text-xs text-muted-foreground text-center w-full">
-            Mobile? Scan QR · Desktop? Click "Open in Phantom" or copy link
+            {publicKey 
+              ? "Conectado! Use o botão acima para pagar diretamente"
+              : "Mobile? Scan QR · Desktop? Click 'Open in Phantom' or copy link"
+            }
           </p>
         </CardFooter>
       )}
