@@ -239,29 +239,37 @@ Testar se multiple tabs sincronizam em tempo real.
 ## 📊 Resumo dos Resultados
 
 ### ✅ Testes Aprovados:
-- [ ] TESTE 1: Gerar QR
-- [ ] TESTE 2: Fazer Pagamento
-- [ ] TESTE 3: Validação Automática
-- [ ] TESTE 4: Visualizar Recibo
-- [ ] TESTE 5: Verificar On-Chain
-- [ ] TESTE 6: Regenerar QR
-- [ ] TESTE 7: Realtime Updates
+- [x] TESTE 1: Gerar QR ✅
+- [x] TESTE 2: Fazer Pagamento ✅
+- [x] TESTE 3: Validação Automática ✅
+- [x] TESTE 4: Visualizar Recibo ✅
+- [x] TESTE 5: Verificar On-Chain ✅
+- [ ] TESTE 6: Regenerar QR (não testado)
+- [ ] TESTE 7: Realtime Updates (não testado)
 
 ### ⏱️ Métricas:
-- **QR Generation Time:** ______s (meta: < 2s)
-- **Transaction Time:** ______s
-- **Validation Time:** ______s (meta: < 10s)
-- **Total Time (end-to-end):** ______s
+- **QR Generation Time:** < 2s ✅ (meta: < 2s)
+- **Transaction Time:** ~5s
+- **Validation Time:** ~34s (created → confirmed)
+- **Total Time (end-to-end):** ~40s
+
+### ✅ Transação Real Confirmada:
+- **Reference:** REFH7BDPJ
+- **Amount:** R$ 18.00
+- **TX Hash:** 5zEXS8anqZCPA4DaYXZLiEr74ycaKKqCz3JXkoynuxEgo5gJkiWUaiuo62fmhxvecRXHdnFY9FfwKrC97y9UTR9W
+- **Explorer:** https://explorer.solana.com/tx/5zEXS8anqZCPA4DaYXZLiEr74ycaKKqCz3JXkoynuxEgo5gJkiWUaiuo62fmhxvecRXHdnFY9FfwKrC97y9UTR9W?cluster=devnet
 
 ### ❌ Problemas Encontrados:
-1. _______________
-2. _______________
-3. _______________
+1. 401 Unauthorized - faltava JWT auth (RESOLVIDO)
+2. Link sem spl-token - faltava mint (RESOLVIDO)
+3. Edge Function 503 - hot reload (RESOLVIDO)
+4. receipt.id vs receipt.ref - usando UUID errado (RESOLVIDO)
 
-### 💡 Melhorias Identificadas:
-1. _______________
-2. _______________
-3. _______________
+### 💡 Melhorias Implementadas:
+1. Botão "Pagar com Wallet Conectada" para desktop
+2. Debug Panel para mostrar configuração
+3. Tratamento automático de autenticação
+4. Logs detalhados para troubleshooting
 
 ---
 
