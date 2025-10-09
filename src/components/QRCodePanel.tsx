@@ -42,7 +42,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          updateReceiptStatus(receipt.id, 'error');
+          updateReceiptStatus(receipt.ref, 'error');
           return 0;
         }
         return prev - 1;
@@ -140,7 +140,7 @@ export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
             updateReceiptStatus(receipt.ref, 'confirmed', txHash);
           }}
           onExpired={() => {
-            updateReceiptStatus(receipt.id, 'error');
+            updateReceiptStatus(receipt.ref, 'error');
           }}
         />
         <div className="mt-4 flex gap-2">
