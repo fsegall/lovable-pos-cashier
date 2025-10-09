@@ -1,9 +1,5 @@
 project_id = "niocfujcwmbwictdpfsn"
 
-[api]
-# Expose app schema for RPC functions
-schemas = ["public", "graphql_public", "app"]
-
 [functions.chat-assistant]
 verify_jwt = true
 
@@ -21,3 +17,17 @@ verify_jwt = false
 
 [functions.openai-realtime-token]
 verify_jwt = true
+
+# Settlement Provider Payouts (require authentication)
+[functions.circle-payout]
+verify_jwt = true
+
+[functions.wise-payout]
+verify_jwt = true
+
+# Settlement Provider Webhooks (external callbacks, no JWT)
+[functions.circle-webhook]
+verify_jwt = false
+
+[functions.wise-webhook]
+verify_jwt = false

@@ -218,7 +218,7 @@ open http://localhost:5173
 ### tBRZ doesn't show in wallet
 - ℹ️ Custom tokens may not display automatically
 - 💡 Import manually: Settings → Manage Token List
-- 📝 Paste mint: `6PzmkfqSn8uoN8adp4uk6nsL8VbdRrJocpB8LxEH4pA4`
+- 📝 Paste mint: `
 
 ---
 

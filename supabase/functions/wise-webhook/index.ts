@@ -99,12 +99,12 @@ serve(async (req) => {
 
       // Update based on state
       if (currentState === 'outgoing_payment_sent') {
-        console.log('✅ Marking payment as settled:', invoice.ref);
+        console.log('✅ Completing settlement:', invoice.ref);
 
-        const { error: settleError } = await supabase.rpc('mark_settled', {
+        const { data: settlementId, error: settleError } = await supabase.rpc('mark_settled', {
           _ref: invoice.ref,
           _provider: 'wise',
-          _settlement_id: transferId.toString(),
+          _provider_tx_id: transferId.toString(),
           _currency: transfer.sourceCurrency,
           _amount: transfer.targetValue,
           _fee: null, // Fee was already in the quote
@@ -115,19 +115,20 @@ serve(async (req) => {
           throw settleError;
         }
 
-        // Mark webhook as processed
+        // Mark webhook as processed and link to settlement
         await supabase
           .from('webhook_events')
           .update({
             processed: true,
             processed_at: new Date().toISOString(),
             processing_time_ms: Date.now() - startTime,
+            settlement_id: settlementId,
           })
           .eq('provider', 'wise')
           .eq('payload->data->resource->>id', transferId.toString())
           .is('processed', false);
 
-        console.log('✅ Settlement completed:', { invoiceRef: invoice.ref, transferId });
+        console.log('✅ Settlement completed:', { invoiceRef: invoice.ref, transferId, settlementId });
 
       } else if (currentState === 'bounced_back' || currentState === 'funds_refunded') {
         console.error('❌ Wise transfer failed:', { transferId, state: currentState });

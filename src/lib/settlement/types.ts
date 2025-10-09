@@ -1,7 +1,7 @@
 // Settlement Provider Types
 // Unified interface for all settlement providers (Circle, Wise, MercadoPago, etc)
 
-export type SettlementProviderName = 'circle' | 'wise' | 'mercadopago' | 'inter' | 'binance';
+export type SettlementProviderName = 'circle' | 'wise' | 'mercadopago' | 'inter' | 'binance' | 'none';
 
 export type PayoutStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
 

@@ -70,14 +70,14 @@ serve(async (req) => {
         return json({ ok: true, message: 'No invoiceRef to process' });
       }
 
-      // Update payment status based on payout status
+      // Update settlement status based on payout status
       if (event.Action === 'completed' || payout.status === 'complete') {
-        console.log('✅ Marking payment as settled:', invoiceRef);
+        console.log('✅ Completing settlement:', invoiceRef);
 
-        const { error: settleError } = await supabase.rpc('mark_settled', {
+        const { data: settlementId, error: settleError } = await supabase.rpc('mark_settled', {
           _ref: invoiceRef,
           _provider: 'circle',
-          _settlement_id: payout.id,
+          _provider_tx_id: payout.id,
           _currency: payout.amount.currency,
           _amount: parseFloat(payout.amount.amount),
           _fee: payout.fees?.amount ? parseFloat(payout.fees.amount) : null,
@@ -88,19 +88,20 @@ serve(async (req) => {
           throw settleError;
         }
 
-        // Mark webhook as processed
+        // Update webhook as processed and link to settlement
         await supabase
           .from('webhook_events')
           .update({
             processed: true,
             processed_at: new Date().toISOString(),
             processing_time_ms: Date.now() - startTime,
+            settlement_id: settlementId,
           })
           .eq('provider', 'circle')
           .eq('payload->payout->>id', payout.id)
           .is('processed', false);
 
-        console.log('✅ Settlement completed:', { invoiceRef, payoutId: payout.id });
+        console.log('✅ Settlement completed:', { invoiceRef, payoutId: payout.id, settlementId });
       } else if (event.Action === 'failed' || payout.status === 'failed') {
         console.error('❌ Circle payout failed:', payout);
 
