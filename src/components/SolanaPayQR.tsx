@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Copy, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getBrzMint } from '@/lib/solana-config';
+import { DebugPanel } from '@/components/DebugPanel';
 
 export type PaymentStatus = 'generating' | 'active' | 'expired' | 'paid' | 'error';
 
@@ -267,6 +268,17 @@ export function SolanaPayQR({
             Mobile? Scan QR · Desktop? Click "Open in Phantom" or copy link
           </p>
         </CardFooter>
+      )}
+      
+      {/* Debug panel - show in development */}
+      {import.meta.env.DEV && paymentRequest && (
+        <div className="mt-4">
+          <DebugPanel
+            paymentUrl={paymentRequest.url.toString()}
+            reference={paymentRequest.reference.toString()}
+            amount={amount}
+          />
+        </div>
       )}
     </Card>
   );
