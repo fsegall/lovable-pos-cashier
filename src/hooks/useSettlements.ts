@@ -85,12 +85,26 @@ export function useSettlements() {
 
       console.log('💰 Requesting settlement:', request);
 
+      // First, get the invoice ref from the payment
+      const { data: payment, error: paymentError } = await supabase
+        .from('payments')
+        .select('invoice:invoices(ref)')
+        .eq('id', request.paymentId)
+        .single();
+
+      if (paymentError || !payment?.invoice?.ref) {
+        throw new Error('Could not find invoice reference for payment');
+      }
+
+      const invoiceRef = payment.invoice.ref;
+      console.log('📄 Found invoice ref:', invoiceRef);
+
       // Call appropriate Edge Function based on provider
       const functionName = request.provider === 'circle' ? 'circle-payout' : 'wise-payout';
       
       const { data, error: invokeError } = await supabase.functions.invoke(functionName, {
         body: {
-          paymentId: request.paymentId,
+          invoiceRef: invoiceRef,
           amount: request.amount,
           currency: request.currency,
           recipientId: request.recipientId,
