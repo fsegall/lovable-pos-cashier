@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Copy, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getBrzMint } from '@/lib/solana-config';
 
 export type PaymentStatus = 'generating' | 'active' | 'expired' | 'paid' | 'error';
 
@@ -46,12 +47,20 @@ export function SolanaPayQR({
     try {
       const recipientPubkey = new PublicKey(recipient);
       const amountBigNumber = new BigNumber(amount);
+      const brzMint = getBrzMint();
+
+      console.log('🎫 Generating Solana Pay QR:', {
+        recipient: recipient,
+        amount: amount,
+        brzMint: brzMint?.toString(),
+      });
 
       const request = await createPaymentRequest({
         recipient: recipientPubkey,
         amount: amountBigNumber,
         label: label || `Payment of R$ ${amount.toFixed(2)}`,
         message: message || 'Thank you for your payment',
+        splToken: brzMint || undefined,
       });
 
       if (request) {
