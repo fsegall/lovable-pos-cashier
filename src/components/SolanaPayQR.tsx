@@ -149,6 +149,23 @@ export function SolanaPayQR({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleCopyLink = () => {
+    if (paymentRequest) {
+      navigator.clipboard.writeText(paymentRequest.url.toString());
+      toast({
+        title: "Link copiado!",
+        description: "Cole o link no Phantom para fazer o pagamento",
+      });
+    }
+  };
+
+  const handleOpenPhantom = () => {
+    if (paymentRequest) {
+      // Try to open in Phantom (works on mobile and some desktop setups)
+      window.location.href = paymentRequest.url.toString();
+    }
+  };
+
   if (status === 'error') {
     return (
       <Alert variant="destructive">
@@ -221,22 +238,34 @@ export function SolanaPayQR({
       </CardContent>
       
       {paymentRequest && status === 'active' && (
-        <CardFooter className="flex gap-2">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={copyToClipboard}
-          >
-            <Copy className="w-4 h-4 mr-2" />
-            Copy Link
-          </Button>
-          <Button
-            variant="outline"
-            onClick={generateQR}
-            disabled={isGenerating}
-          >
-            <RefreshCw className="w-4 h-4" />
-          </Button>
+        <CardFooter className="flex flex-col gap-2">
+          <div className="flex gap-2 w-full">
+            <Button
+              variant="default"
+              className="flex-1"
+              onClick={handleOpenPhantom}
+            >
+              Open in Phantom
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={handleCopyLink}
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copy Link
+            </Button>
+            <Button
+              variant="outline"
+              onClick={generateQR}
+              disabled={isGenerating}
+            >
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground text-center w-full">
+            Mobile? Scan QR · Desktop? Click "Open in Phantom" or copy link
+          </p>
         </CardFooter>
       )}
     </Card>
