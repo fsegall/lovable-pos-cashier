@@ -340,7 +340,8 @@ export function SolanaPayQR({
       
       {paymentRequest && status === 'active' && (
         <CardFooter className="flex flex-col gap-2">
-          {publicKey && (
+          {/* Primary action: Pay with connected wallet (desktop) */}
+          {publicKey ? (
             <Button
               variant="default"
               className="w-full"
@@ -359,28 +360,29 @@ export function SolanaPayQR({
                 </>
               )}
             </Button>
+          ) : (
+            <Alert>
+              <AlertDescription className="text-sm">
+                💡 <strong>Desktop:</strong> Conecte sua wallet no header para pagar com um clique!
+              </AlertDescription>
+            </Alert>
           )}
           
+          {/* Secondary actions */}
           <div className="flex gap-2 w-full">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={handleOpenPhantom}
-            >
-              Open in Phantom
-            </Button>
             <Button
               variant="outline"
               className="flex-1"
               onClick={handleCopyLink}
             >
               <Copy className="w-4 h-4 mr-2" />
-              Copy Link
+              Copiar Link
             </Button>
             <Button
               variant="outline"
               onClick={generateQR}
               disabled={isGenerating}
+              className="px-3"
             >
               <RefreshCw className="w-4 h-4" />
             </Button>
@@ -388,8 +390,8 @@ export function SolanaPayQR({
           
           <p className="text-xs text-muted-foreground text-center w-full">
             {publicKey 
-              ? "Conectado! Use o botão acima para pagar diretamente"
-              : "Mobile? Scan QR · Desktop? Click 'Open in Phantom' or copy link"
+              ? "💳 Pagamento direto ativo"
+              : "📱 Mobile: Escaneie o QR · 💻 Desktop: Conecte wallet"
             }
           </p>
         </CardFooter>
