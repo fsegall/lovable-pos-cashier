@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { encodeURL, createQR, TransferRequestURL } from '@solana/pay';
 import BigNumber from 'bignumber.js';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface PaymentRequest {
   reference: PublicKey;
@@ -73,31 +74,18 @@ export function useSolanaPay() {
   const validatePayment = useCallback(
     async (reference: string): Promise<{ status: string; tx?: string } | null> => {
       try {
-        // Use local Supabase if running on localhost, otherwise use production
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const supabaseUrl = isLocal 
-          ? (import.meta.env.VITE_SUPABASE_LOCAL_URL || 'http://127.0.0.1:54321')
-          : (import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL);
-        
-        if (!supabaseUrl) {
-          throw new Error('Supabase URL not configured');
-        }
+        console.log('🔍 Validating payment for reference:', reference);
 
-        console.log('🔍 Validating payment via:', supabaseUrl);
-
-        const response = await fetch(`${supabaseUrl}/functions/v1/validate-payment`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ reference }),
+        const { data, error: invokeError } = await supabase.functions.invoke('validate-payment', {
+          body: { reference },
         });
 
-        if (!response.ok) {
-          throw new Error(`Validation failed: ${response.statusText}`);
+        if (invokeError) {
+          throw new Error(`Validation failed: ${invokeError.message}`);
         }
 
-        return await response.json();
+        console.log('✅ Validation response:', data);
+        return data;
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to validate payment';
         setError(message);
