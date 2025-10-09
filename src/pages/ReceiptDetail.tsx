@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { StatusChip } from '@/components/StatusChip';
+import { SettlementPanel } from '@/components/SettlementPanel';
 import { useReceipts } from '@/hooks/useReceipts';
 import { useMerchant } from '@/hooks/useMerchant';
 import { useTranslation } from '@/lib/i18n';
@@ -137,6 +138,9 @@ export default function ReceiptDetail() {
             {t('receipts.detail.pixLike')}
           </div>
         </Card>
+
+        {/* Settlement Panel - convert crypto to fiat */}
+        <SettlementPanel receipt={receipt} onSettled={() => window.location.reload()} />
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 print:hidden">
           <Button variant="outline" onClick={handleShare}>
