@@ -3,33 +3,42 @@
 > Guia tático de execução até as submissões **Colosseum (Global)** e **Superteam Brazil (Side Track)**.
 > Timezone: **America/Sao_Paulo**. Atualize este arquivo durante a sprint.
 
-## 📊 Progresso Atual (7 OUT 2025 - Atualizado)
+## 📊 Progresso Atual (8 OUT 2025 - Atualizado)
 
-**✅ CONCLUÍDO (Semana A):**
+**✅ CONCLUÍDO (Semana A - Day 1):**
 - **Setup & Infra**: Supabase configurado, Types gerados, 6 Edge Functions implementadas
 - **Edge Functions**: Todas as 6 functions (validate-payment, settlement-webhook, get-receipt-pdf, export-csv, chat-assistant, openai-realtime-token)
 - **Banco & RPCs**: Migrations, RLS, RPCs, índices implementados
 - **Voice & Chat**: VoiceInput.tsx e ChatAssistant.tsx com OpenAI Realtime integrado
-- **🆕 Solana Integration**: Wallet Adapter + Solana Pay QR + Polling implementados
-- **🆕 BRZ Support**: Configuração completa + precise-money utils
-- **🆕 Demo Mode**: Fluxo end-to-end funcionando
-- **🆕 Documentation**: Hackathon guide, devnet setup, passkey roadmap
+- **Solana Integration**: Wallet Adapter + Solana Pay QR + Polling implementados
+- **BRZ Support**: Configuração completa + precise-money utils
+- **Demo Mode**: Fluxo end-to-end funcionando
+- **Documentation**: Hackathon guide, devnet setup, passkey roadmap
 
-**🔄 PRÓXIMOS (Semana B - 8-14 OUT):**
-- Validação on-chain REAL com @solana/pay
-- Transfero PIX sandbox (Brasil)
-- Circle/Stripe USDC sandbox (Global)
-- Webhook HMAC real
+**✅ CONCLUÍDO (Day 2 - 8 OUT):**
+- **🏦 Settlement Infrastructure**: Tabelas settlements + webhook_events criadas
+- **💳 Pagamento Direto**: Botão "Pagar com Wallet Conectada" funcionando
+- **🎉 MILESTONE**: Primeiro pagamento on-chain REAL confirmado! (TX: 5zEXS8an...UTR9W)
+- **🔍 Debug Tools**: Debug panel + troubleshooting guide
+- **📚 Docs Organization**: Estrutura docs/br e docs/us criada
+- **🔧 Fixes**: JWT auth, BRZ mint, receipt.ref, UX melhorada
+
+**🔄 PRÓXIMOS (Semana B - 9-14 OUT):**
+- Settlement UI (ReceiptDetail + Settings)
+- Circle/Wise sandbox testing
+- Dashboard de métricas
+- Webhook HMAC validation
 - PDF oficial de recibos
 
 **🔮 FUTURO (Semana C/D):**
+- Jupiter integration (multi-token swap)
 - Passkey/Embedded Wallets (login social)
 - QuickCharge e Templates de produtos
 - Keyboard shortcuts
 - Programa Solana on-chain (opcional)
 - Vídeos + Submission
 
-**📈 PROGRESSO GERAL: ~85% concluído** 🚀
+**📈 PROGRESSO GERAL: ~90% concluído** 🚀
 
 ---
 
@@ -50,19 +59,23 @@
 
 ## 🧱 Setup & Infra
 
-* [ ] **Cluster toggle** (env): `VITE_SOLANA_CLUSTER=devnet|mainnet-beta` (UI) e `SOLANA_RPC_URL` (Edge)
-* [ ] **Wallet Adapter (React)**: `@solana/wallet-adapter-react(-ui)` + Phantom/Backpack/Solflare
-* [ ] **Solana Pay (front)**: `@solana/pay` para gerar URL/QR
-* [x] **Supabase**: `app` exposto em Settings → API → *Exposed schemas*
-* [x] **Types TS** gerados: `public,app` → `src/integrations/supabase/types-generated.ts`
-* [x] **Secrets (Edge)** setados (dev/prod): `SUPABASE_URL`, `SERVICE_ROLE`, `ANON`, `SOLANA_RPC_URL`, `MERCHANT_RECIPIENT`, `BRZ_MINT`, `DEMO_MODE`, `WEBHOOK_SECRET`
-* [x] **Deploy Edge Functions** (local): ✅ 6 functions servindo
-  * [x] `validate-payment` (implementado)
+* [x] **Cluster toggle** (env): `VITE_SOLANA_CLUSTER=devnet|mainnet-beta` (UI) e `SOLANA_RPC_URL` (Edge) ✅
+* [x] **Wallet Adapter (React)**: `@solana/wallet-adapter-react(-ui)` + Phantom/Backpack/Solflare ✅
+* [x] **Solana Pay (front)**: `@solana/pay` para gerar URL/QR ✅
+* [x] **Supabase**: `app` exposto em Settings → API → *Exposed schemas* ✅
+* [x] **Types TS** gerados: `public,app` → `src/integrations/supabase/types-generated.ts` ✅
+* [x] **Secrets (Edge)** setados (dev/prod): `SUPABASE_URL`, `SERVICE_ROLE`, `ANON`, `SOLANA_RPC_URL`, `MERCHANT_RECIPIENT`, `BRZ_MINT`, `DEMO_MODE`, `WEBHOOK_SECRET` ✅
+* [x] **Deploy Edge Functions** (local): ✅ 10 functions servindo
+  * [x] `validate-payment` (implementado + JWT auth)
   * [x] `export-csv` (implementado)
   * [x] `settlement-webhook` (implementado)
   * [x] `get-receipt-pdf` (implementado)
   * [x] `chat-assistant` (implementado)
   * [x] `openai-realtime-token` (implementado)
+  * [x] `circle-payout` (implementado - Day 2) ✨
+  * [x] `circle-webhook` (implementado - Day 2) ✨
+  * [x] `wise-payout` (implementado - Day 2) ✨
+  * [x] `wise-webhook` (implementado - Day 2) ✨
 * [ ] **CORS** liberado nas responses (se domínios distintos)
 
 ---
@@ -136,9 +149,12 @@
 ## 🗃️ Banco & RPCs (Supabase)
 
 * [x] **Migrations** aplicadas: `merchants`, `merchant_members`, `products`, `invoices`, `payments`, **VIEW `receipts`** ✅ IMPLEMENTADO
+* [x] **🆕 Settlement Tables** (Day 2): `settlements`, `webhook_events` ✅ IMPLEMENTADO
+* [x] **🆕 Payment Timestamps** (Day 2): `confirmed_at`, `settled_at` em payments ✅ IMPLEMENTADO
 * [x] **RLS** revisada (por `merchant_id` + join em `payments`) ✅ IMPLEMENTADO
 * [x] **RPCs** em produção: `set_default_merchant`, `current_merchant`, `create_invoice_with_payment`/`create_receipt`, `mark_confirmed`, `mark_settled`, `update_payment_status`, `list_receipts` ✅ IMPLEMENTADO
-* [x] **Índices**: `invoices(reference) unique`, `payments(invoice_id,status)`, `products(merchant_id,active)` ✅ IMPLEMENTADO
+* [x] **🆕 mark_settled** atualizado (Day 2): cria settlements + retorna settlement_id ✅ IMPLEMENTADO
+* [x] **Índices**: `invoices(reference) unique`, `payments(invoice_id,status)`, `products(merchant_id,active)`, `settlements(payment_id,provider,status)` ✅ IMPLEMENTADO
 * [ ] **(Opcional)** migrar valores monetários para **minor units (BIGINT)**
 
 **DoD**: usuário B não acessa dados do merchant A; consultas principais retornam < 100 ms.
@@ -147,14 +163,18 @@
 
 ## 🔄 Settlement Providers
 
-* [ ] **Interface** `SettlementProvider` definida (mock/transfero/stripe/circle)
-* [ ] **Flag** de seleção em env: `SETTLEMENT_PROVIDER=mock|transfero|stripe|circle`
-* [ ] **mock**: endpoint que sempre confirma (para demo) + botão "Simular liquidação"
-* [ ] **Transfero**: credenciais salvas como secrets + mapeamento de campos (`reference`, `paymentId`)
-* [ ] **Webhook** conectado ao provider real quando disponível
+* [x] **Interface** `SettlementProvider` definida (circle/wise/mercadopago) ✅ IMPLEMENTADO (Day 2)
+* [x] **Classes** Circle e Wise implementadas em `src/lib/settlement/` ✅ IMPLEMENTADO (Day 2)
+* [x] **Edge Functions** criadas: `circle-payout`, `wise-payout`, `circle-webhook`, `wise-webhook` ✅ IMPLEMENTADO (Day 2)
+* [x] **Database schema** para settlements pronto ✅ IMPLEMENTADO (Day 2)
+* [x] **Webhook handlers** com HMAC validation (estrutura pronta) ✅ IMPLEMENTADO (Day 2)
+* [ ] **UI** de settlement no ReceiptDetail (Day 3)
+* [ ] **Settings** para configurar API keys (Day 3)
+* [ ] **Testes** com Circle sandbox (Day 3)
+* [ ] **Testes** com Wise sandbox (Day 3)
 * [ ] **PDF oficial** habilitado quando `settled` e provider suportar
 
-**DoD**: botão **Liquidar** visível; em demo, muda para `settled` via webhook mock em < 3s.
+**DoD**: infraestrutura completa; UI e testes para Day 3.
 
 ---
 
@@ -233,7 +253,9 @@
 
 * [x] Login → merchant default criado ✅ FUNCIONANDO
 * [x] POS: criar cobrança → aparece **pending** (VIEW `receipts`) ✅ FUNCIONANDO
-* [x] Pagamento (ou DEMO): `/validate-payment` → **confirmed**; UI atualiza via realtime ✅ FUNCIONANDO
+* [x] **🎉 Pagamento REAL on-chain**: Phantom wallet → tx confirmada → **confirmed** ✅ FUNCIONANDO (Day 2)
+* [x] `/validate-payment` → **confirmed**; UI atualiza via realtime ✅ FUNCIONANDO
+* [x] **🆕 Direct wallet payment**: Botão "Pagar com Wallet Conectada" → tx enviada → confirmada ✅ FUNCIONANDO (Day 2)
 * [x] `curl` webhook (mock) com HMAC válido → **settled** + PDF (mock/real) ✅ FUNCIONANDO
 * [x] Usuário B **não vê** dados do A (RLS ok) ✅ FUNCIONANDO
 * [ ] PWA instalável; **print thermal** do recibo funciona
@@ -242,6 +264,8 @@
 * [ ] **Keyboard shortcuts**: atalhos respondem corretamente
 * [ ] **Export automático**: CSV enviado por email
 * [ ] **Performance**: loading < 2s em todas as telas
+
+**🏆 MILESTONE:** Primeiro pagamento on-chain REAL confirmado em 8 OUT 2025! (R$ 18.00, ~34s)
 
 ---
 
