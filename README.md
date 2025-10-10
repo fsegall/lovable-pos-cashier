@@ -68,9 +68,16 @@ npm run dev
 
 ### Crypto & Payments
 
-* **Solana Web3.js**
+* **Solana Web3.js** + **Wallet Adapter** (Phantom, Solflare, etc)
 * **Solana Pay** (deep link/QR + `reference`)
-* **BRZ Token** - Brazilian stablecoin
+* **Jupiter Exchange** - Multi-token support (100+ SPL tokens)
+* **Multi-Stablecoin** - BRZ, USDC, EURC
+
+### AI & Automation
+
+* **OpenAI GPT-4** - Chat assistant
+* **OpenAI Realtime API** - Voice commands
+* **Natural Language** - Payment queries and automation
 
 ### Development
 
@@ -82,35 +89,66 @@ npm run dev
 
 ## 📱 Implemented Features
 
-### ✅ Authentication System
+### 🤖 AI-Powered Operations
+- **Chat Assistant** - Natural language queries ("Show today's sales", "Cancel invoice REF123")
+- **Voice Commands** - Hands-free operation with OpenAI Realtime API
+- **Automated Insights** - Real-time analytics and recommendations
+- **Context-Aware** - Understands merchant data and history
+
+### 🪐 Multi-Token Acceptance (Jupiter)
+- **100+ SPL Tokens** - Accept SOL, USDC, BONK, JUP, PYTH, JTO, WIF, and more
+- **Token Selector UI** - Beautiful interface to choose accepted tokens
+- **Settlement Tokens** - Receive in BRZ (Brazil), USDC (USA), or EURC (Europe)
+- **Flexible Architecture** - Merchant chooses: keep crypto, swap to stable, or settle to fiat
+
+### ⚡ On-Chain Payments (Solana Pay)
+- **Instant Confirmation** - <10 second on-chain finality
+- **QR Code Generation** - Solana Pay protocol compatible
+- **Direct Wallet Payment** - One-click payment for desktop users
+- **Real-time Validation** - Automatic payment detection and confirmation
+- **Transaction Tracking** - Full on-chain verification
+
+### 🏦 Global Settlement
+- **Wise Integration** - 50+ currencies, BRL-focused
+- **Circle Integration** - USDC/EUR/GBP global settlement
+- **DEMO Mode** - Test settlement flow without real money
+- **Optional Off-Ramp** - Merchant chooses when to convert to fiat
+- **Multi-Currency** - Support for BRZ, USD, EUR markets
+
+### 📊 Analytics & Dashboard
+- **Real-Time Metrics** - Total volume, transaction count, average ticket
+- **Settlement Analytics** - Crypto balance, settled amounts, success rates
+- **Transaction History** - Complete audit trail with status tracking
+- **CSV Export** - Data portability for accounting
+
+### ✅ Authentication & Multi-Tenancy
 - Login/register with Supabase Auth
-- Route protection
-- Session management
+- Multi-merchant support with RLS (Row-Level Security)
+- Role-based permissions (owner, manager, cashier)
+- Feature flags per merchant
 
 ### ✅ POS (Point of Sale)
-- Mobile-first interface
-- Numeric keypad for values
-- Charge generation
-- QR Code display
-- Demo mode with development controls
+- Mobile-first responsive interface
+- Numeric keypad for amounts
+- Token selector (multi-token support)
+- QR Code generation (Solana Pay)
+- Direct wallet payment option
+- Real-time status updates
 
 ### ✅ Receipt Management
-- Automatic invoice creation
-- Status tracking (pending → confirmed → settled)
-- Transaction history
-- Data export
+- Automatic invoice creation with unique references
+- Status tracking: pending → confirmed → settled
+- Settlement panel for fiat conversion
+- Transaction details with on-chain links
+- Receipt history and search
 
-### ✅ Multi-tenancy
-- Merchant system
-- Multiple users per merchant
-- Feature flags per merchant (demo mode, etc.)
-
-### ✅ UI/UX
-- Responsive design (mobile-first)
+### ✅ UI/UX Excellence
+- Responsive design (mobile-first, desktop-optimized)
 - PWA ready (manifest.json, service worker)
-- Tab navigation
-- Reusable components
-- Smooth animations
+- Dark mode support
+- EN/PT-BR i18n
+- Smooth animations (Framer Motion)
+- Professional shadcn/ui components
 
 ---
 
