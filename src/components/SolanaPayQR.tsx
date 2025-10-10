@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getBrzMint } from '@/lib/solana-config';
 import { DebugPanel } from '@/components/DebugPanel';
 import { TokenInfo, getDefaultPaymentToken } from '@/lib/tokens';
+import { useAutoSwap } from '@/hooks/useAutoSwap';
 
 export type PaymentStatus = 'generating' | 'active' | 'expired' | 'paid' | 'error';
 
@@ -52,6 +53,7 @@ export function SolanaPayQR({
   const { toast } = useToast();
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
+  const { processAutoSwap } = useAutoSwap();
 
   const generateQR = async () => {
     setStatus('generating');
