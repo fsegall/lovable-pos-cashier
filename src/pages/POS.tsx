@@ -3,6 +3,7 @@ import { HeaderBar } from '@/components/HeaderBar';
 import { BottomTabs } from '@/components/BottomTabs';
 import { MoneyKeypad } from '@/components/MoneyKeypad';
 import { QRCodePanel } from '@/components/QRCodePanel';
+import { TokenSelector } from '@/components/TokenSelector';
 import { Card } from '@/components/ui/card';
 import { useReceipts } from '@/hooks/useReceipts';
 import { Receipt } from '@/types/store';
@@ -10,11 +11,17 @@ import { useTranslation } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { StatusChip } from '@/components/StatusChip';
 import { supabase } from '@/integrations/supabase/client';
+import { getDefaultPaymentToken, getSettlementTokens, TokenInfo } from '@/lib/tokens';
 
 export default function POS() {
   const { t } = useTranslation();
   const [currentReceipt, setCurrentReceipt] = useState<Receipt | null>(null);
   const { receipts, createCharge, refetch } = useReceipts();
+  
+  // Jupiter multi-token support
+  const [autoSwapEnabled, setAutoSwapEnabled] = useState(false);
+  const [inputToken, setInputToken] = useState<TokenInfo>(getDefaultPaymentToken());
+  const [outputToken, setOutputToken] = useState<TokenInfo>(getSettlementTokens()[0]);
 
   // Realtime: assinar invoices e payments para atualizar automaticamente
   useEffect(() => {

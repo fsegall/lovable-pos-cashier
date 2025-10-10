@@ -62,6 +62,14 @@ export const MAINNET_TOKENS: TokenInfo[] = [
     coingeckoId: 'brz',
   },
   {
+    symbol: 'EURC',
+    name: 'Euro Coin',
+    mint: 'HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr',
+    decimals: 6,
+    logoURI: 'https://www.circle.com/hubfs/Brand/EURC/EURC-icon-128.png',
+    coingeckoId: 'euro-coin',
+  },
+  {
     symbol: 'BONK',
     name: 'Bonk',
     mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
@@ -128,12 +136,13 @@ export function getDefaultPaymentToken(): TokenInfo {
   return DEVNET_TOKENS.find(t => t.symbol === 'tBRZ')!;
 }
 
-// Get preferred settlement tokens (BRZ or USDC)
-// Merchants can choose which stable they want to receive
+// Get preferred settlement tokens (BRZ, USDC, EURC)
+// Merchants can choose which stable they want to receive based on region
 export function getSettlementTokens(): TokenInfo[] {
   const cluster = import.meta.env.VITE_SOLANA_CLUSTER || 'devnet';
   if (cluster === 'mainnet-beta') {
-    return MAINNET_TOKENS.filter(t => ['BRZ', 'USDC', 'USDT'].includes(t.symbol));
+    // Stablecoins for settlement: BRZ (Brazil), USDC (USA/Global), EURC (Europe)
+    return MAINNET_TOKENS.filter(t => ['BRZ', 'USDC', 'USDT', 'EURC'].includes(t.symbol));
   }
   // In devnet, only tBRZ is available
   return DEVNET_TOKENS.filter(t => t.symbol === 'tBRZ');
@@ -141,7 +150,7 @@ export function getSettlementTokens(): TokenInfo[] {
 
 // Check if a token is a stablecoin
 export function isStablecoin(symbol: string): boolean {
-  return ['USDC', 'USDT', 'BRZ', 'tBRZ', 'EUROC'].includes(symbol.toUpperCase());
+  return ['USDC', 'USDT', 'BRZ', 'tBRZ', 'EURC'].includes(symbol.toUpperCase());
 }
 
 // Get USDC mint for current network
