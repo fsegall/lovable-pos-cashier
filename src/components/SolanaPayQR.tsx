@@ -60,12 +60,18 @@ export function SolanaPayQR({
     try {
       const recipientPubkey = new PublicKey(recipient);
       const amountBigNumber = new BigNumber(amount);
-      const brzMint = getBrzMint();
+      
+      // Use provided payment token or fallback to default (tBRZ/BRZ)
+      const tokenToUse = paymentToken || getDefaultPaymentToken();
+      const tokenMint = new PublicKey(tokenToUse.mint);
 
       console.log('🎫 Generating Solana Pay QR:', {
         recipient: recipient,
         amount: amount,
-        brzMint: brzMint?.toString(),
+        paymentToken: tokenToUse.symbol,
+        tokenMint: tokenMint.toString(),
+        autoSwap: autoSwapEnabled,
+        settlementToken: settlementToken?.symbol,
       });
 
       const request = await createPaymentRequest({
@@ -73,7 +79,7 @@ export function SolanaPayQR({
         amount: amountBigNumber,
         label: label || `Payment of R$ ${amount.toFixed(2)}`,
         message: message || 'Thank you for your payment',
-        splToken: brzMint || undefined,
+        splToken: tokenMint,
       });
 
       if (request) {
