@@ -103,6 +103,22 @@ export default function POS() {
       <main className="flex-1 container mx-auto px-4 py-6 max-w-2xl">
         {!currentReceipt ? (
           <>
+            {/* Token Selector - Jupiter Integration */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <TokenSelector
+                selectedInputToken={inputToken}
+                selectedOutputToken={outputToken}
+                onInputTokenChange={setInputToken}
+                onOutputTokenChange={setOutputToken}
+                autoSwapEnabled={autoSwapEnabled}
+                onAutoSwapChange={setAutoSwapEnabled}
+              />
+            </motion.div>
+
             {recentReceipts.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
