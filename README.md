@@ -1,6 +1,13 @@
-# Merchant AI Checkout (Solana BRZ + PIX)
+# 🤖 Solana Merchant AI
 
-> **PWA POS with AI agent** for merchants to receive crypto payments on mobile (Solana Pay + BRZ), with **PIX-like on-chain receipts** immediately and **BRL settlement via PIX** (when enabled via Transfero). Ideal for counter, fairs and local commerce.
+> **AI-powered crypto POS** that helps merchants accept Solana payments (100+ tokens via Jupiter), automate settlement (Wise/Circle), and get real-time insights via **chat and voice assistants**.
+
+### 🌟 Key Differentiators:
+- 🤖 **AI Chat Assistant** - Natural language payment queries and automation
+- 🎤 **Voice Commands** - Hands-free operation with OpenAI Realtime API
+- 🪐 **Multi-Token Support** - Accept SOL, USDC, BONK, JUP, +100 SPL tokens (Jupiter)
+- 🌍 **Global Settlement** - BRZ (Brazil), USDC (USA), EURC (Europe) via Wise/Circle
+- 💎 **Crypto-First** - Merchant chooses: keep crypto, swap, or settle to fiat
 
 ---
 

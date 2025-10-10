@@ -1,43 +1,47 @@
-# 📱 Twitter/X Posts - Templates Prontos
+a cri# 📱 Twitter/X Posts - Templates Prontos
 
 ## 🚀 POST #1: INTRODUCTION (FAZER HOJE!)
 
 ### Versão PT-BR:
 ```
-🚀 Construindo o futuro dos pagamentos no Brasil!
+🤖 Apresentando: Solana Merchant AI
 
-Apresento: Solana Merchant Pay
-⚡ Confirmação on-chain instantânea (<10s)
-💰 Aceita tBRZ + multi-token (Jupiter em breve!)
-🏦 Settlement opcional para fiat (Wise/Circle)
-📊 Dashboard analytics em tempo real
+O POS com IA que revoluciona pagamentos crypto:
+
+🤖 Chat + Voice Assistants (OpenAI)
+⚡ Aceita 100+ tokens (Jupiter)
+🌍 Settlement global (BRZ/USD/EUR)
+📊 Insights em tempo real
+💎 Merchant escolhe: crypto ou fiat
 
 Participando do @Colosseum_org Hackathon! 🏆
 
-#Solana #SolanaPay #BuildOnSolana #Web3
+#SolanaAI #BuildOnSolana #Web3 #AIPayments
 
 GitHub: github.com/fsegall/solana-merchant-pay
 
-[Imagem: Dashboard screenshot]
+[Imagem: Dashboard com Chat Assistant visível]
 ```
 
 ### Versão EN:
 ```
-🚀 Building the future of payments in Brazil & LATAM!
+🤖 Introducing: Solana Merchant AI
 
-Introducing Solana Merchant Pay:
-⚡ Instant on-chain confirmation (<10s)
-💰 Accept tBRZ + multi-token (Jupiter soon!)
-🏦 Optional fiat settlement (Wise/Circle)
-📊 Real-time analytics dashboard
+AI-powered crypto POS that changes the game:
+
+🤖 Chat + Voice Assistants (OpenAI)
+⚡ Accept 100+ SPL tokens (@JupiterExchange)
+🌍 Global settlement (BRL/USD/EUR)
+📊 Real-time AI insights
+💎 Merchant control: keep, swap, or settle
 
 Built for @Colosseum_org Hackathon! 🏆
 
-#Solana #SolanaPay #BuildOnSolana
+#SolanaAI #BuildOnSolana #Web3 #AIPayments
 
 Open source: github.com/fsegall/solana-merchant-pay
 
-[Image: Dashboard or POS interface]
+[Image: Dashboard with Chat Assistant visible]
 ```
 
 ---

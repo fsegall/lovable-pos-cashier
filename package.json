@@ -1,8 +1,9 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "solana-merchant-ai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "AI-powered crypto POS for Solana merchants - accept 100+ tokens, automate settlement, get insights via chat & voice",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
