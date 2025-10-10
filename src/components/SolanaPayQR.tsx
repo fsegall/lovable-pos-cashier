@@ -211,16 +211,17 @@ export function SolanaPayQR({
         from: publicKey.toString(),
         to: recipient,
         amount: amount,
-        mint: brzMint.toString(),
+        token: tokenToUse.symbol,
+        mint: tokenMint.toString(),
         reference: paymentRequest.reference.toString(),
       });
 
-      // Get ATAs
-      const fromAta = await getAssociatedTokenAddress(brzMint, publicKey);
-      const toAta = await getAssociatedTokenAddress(brzMint, recipientPubkey);
+      // Get ATAs for the payment token
+      const fromAta = await getAssociatedTokenAddress(tokenMint, publicKey);
+      const toAta = await getAssociatedTokenAddress(tokenMint, recipientPubkey);
 
-      // Convert amount to token units (6 decimals for tBRZ)
-      const tokenAmount = Math.floor(amount * 1_000_000); // 18.00 → 18000000
+      // Convert amount to token units (using token's decimals)
+      const tokenAmount = Math.floor(amount * Math.pow(10, tokenToUse.decimals));
 
       console.log('🔢 Token amount (minor units):', tokenAmount);
 
