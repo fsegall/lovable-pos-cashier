@@ -162,7 +162,13 @@ export default function POS() {
             </Card>
           </>
         ) : (
-          <QRCodePanel receipt={currentReceipt} onClose={handleClose} />
+          <QRCodePanel 
+            receipt={currentReceipt} 
+            onClose={handleClose}
+            paymentToken={autoSwapEnabled ? inputToken : outputToken}
+            settlementToken={outputToken}
+            autoSwapEnabled={autoSwapEnabled}
+          />
         )}
       </main>
 

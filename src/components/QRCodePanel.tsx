@@ -11,13 +11,17 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { SolanaPayQR } from '@/components/SolanaPayQR';
 import { getMerchantRecipient } from '@/lib/solana-config';
+import { TokenInfo } from '@/lib/tokens';
 
 interface QRCodePanelProps {
   receipt: Receipt;
   onClose: () => void;
+  paymentToken?: TokenInfo; // Token customer pays with
+  settlementToken?: TokenInfo; // Token merchant receives (for Jupiter swap)
+  autoSwapEnabled?: boolean; // Whether Jupiter auto-swap is enabled
 }
 
-export function QRCodePanel({ receipt, onClose }: QRCodePanelProps) {
+export function QRCodePanel({ receipt, onClose, paymentToken, settlementToken, autoSwapEnabled }: QRCodePanelProps) {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
   const [fullscreen, setFullscreen] = useState(false);
