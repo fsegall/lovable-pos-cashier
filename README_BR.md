@@ -1,6 +1,13 @@
-# Merchant AI Checkout (Solana “PIX‑like” + Global Settlement)
+# 🤖 Solana Merchant AI
 
-> **PWA POS com agente de IA** para comerciantes receberem cripto no celular (Solana Pay + BRZ/USDC), com **recibo PIX‑like on‑chain** imediato e **liquidação opcional em moeda local** via provedores (ex.: **PIX** no Brasil). O mesmo app atende a trilha **Brasil** (PIX) e o **global** (experiência “PIX‑like” com stablecoin e off‑ramp).
+> **POS com IA** que ajuda comerciantes a aceitar pagamentos em Solana (100+ tokens via Jupiter), automatizar liquidação (Wise/Circle) e obter insights em tempo real via **assistentes de chat e voz**.
+
+### 🌟 Diferenciais Principais:
+- 🤖 **Assistente de IA (Chat)** - Consultas em linguagem natural e automação
+- 🎤 **Comandos de Voz** - Operação mãos-livres com OpenAI Realtime API
+- 🪐 **Suporte Multi-Token** - Aceita SOL, USDC, BONK, JUP, +100 tokens SPL (Jupiter)
+- 🌍 **Liquidação Global** - BRZ (Brasil), USDC (EUA), EURC (Europa) via Wise/Circle
+- 💎 **Crypto-First** - Comerciante escolhe: manter crypto, trocar, ou liquidar em fiat
 
 ---
 
