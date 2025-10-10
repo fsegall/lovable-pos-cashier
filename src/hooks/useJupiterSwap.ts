@@ -32,13 +32,15 @@ export function useJupiterSwap() {
   const [error, setError] = useState<string | null>(null);
 
   // Get quote from Jupiter
+  // outputMint: Target token (tBRZ, USDC, etc). Defaults to tBRZ/BRZ based on network
   const getQuote = useCallback(async (
     inputMint: string,
     amount: number, // Amount in UI units (not minor units)
-    outputMint?: string
+    outputMint?: string // If not provided, defaults to BRZ/tBRZ
   ): Promise<SwapQuote | null> => {
     try {
       setError(null);
+      // Default to BRZ, but allow USDC or any other token
       const targetMint = outputMint || getBrzMint();
       
       // Convert amount to minor units (assuming 6 decimals for most SPL tokens)

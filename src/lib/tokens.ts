@@ -128,3 +128,29 @@ export function getDefaultPaymentToken(): TokenInfo {
   return DEVNET_TOKENS.find(t => t.symbol === 'tBRZ')!;
 }
 
+// Get preferred settlement tokens (BRZ or USDC)
+// Merchants can choose which stable they want to receive
+export function getSettlementTokens(): TokenInfo[] {
+  const cluster = import.meta.env.VITE_SOLANA_CLUSTER || 'devnet';
+  if (cluster === 'mainnet-beta') {
+    return MAINNET_TOKENS.filter(t => ['BRZ', 'USDC', 'USDT'].includes(t.symbol));
+  }
+  // In devnet, only tBRZ is available
+  return DEVNET_TOKENS.filter(t => t.symbol === 'tBRZ');
+}
+
+// Check if a token is a stablecoin
+export function isStablecoin(symbol: string): boolean {
+  return ['USDC', 'USDT', 'BRZ', 'tBRZ', 'EUROC'].includes(symbol.toUpperCase());
+}
+
+// Get USDC mint for current network
+export function getUsdcMint(): string {
+  const cluster = import.meta.env.VITE_SOLANA_CLUSTER || 'devnet';
+  if (cluster === 'mainnet-beta') {
+    return 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // Mainnet USDC
+  }
+  // Devnet USDC (if available) - fallback to tBRZ for now
+  return '6PzmkfqSn8uoN8adp4uk6nsL8VbdRrJocpB8LxEH4pA4'; // tBRZ for devnet
+}
+
