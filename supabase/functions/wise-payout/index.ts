@@ -94,24 +94,40 @@ serve(async (req) => {
     const quote = await quoteResponse.json();
     console.log('✅ Quote created:', { id: quote.id, fee: quote.fee, rate: quote.rate });
 
-    // Step 2: Create transfer
-    console.log('💸 Step 2: Creating transfer...');
+    // Step 2: Create third-party transfer (required for BRL to include originator CPF)
+    console.log('💸 Step 2: Creating third-party transfer...');
     
-    // Generate UUID for customer transaction ID (Wise requires UUID format)
-    const customerTransactionId = crypto.randomUUID();
-    console.log('🔑 Generated customerTransactionId:', customerTransactionId);
+    // Generate unique transfer ID for idempotency
+    const originalTransferId = crypto.randomUUID();
+    console.log('🔑 Generated originalTransferId:', originalTransferId);
     
     const transferResponse = await fetch(
-      `${WISE_API_BASE}/v1/transfers`,
+      `${WISE_API_BASE}/v2/profiles/${WISE_PROFILE_ID}/third-party-transfers`,
       {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({
           targetAccount: parseInt(WISE_RECIPIENT_ID),
-          quoteUuid: quote.id,
-          customerTransactionId: customerTransactionId,
+          quote: quote.id,
+          originalTransferId: originalTransferId,
           details: {
             reference: `Invoice ${invoiceRef}`,
+          },
+          originator: {
+            legalEntityType: 'PRIVATE',
+            reference: invoice.merchant_id || 'merchant-ref',
+            name: {
+              givenName: 'Merchant',
+              familyName: 'Owner',
+            },
+            dateOfBirth: '1980-01-01',
+            address: {
+              firstLine: 'Address Line 1',
+              city: 'Brasilia',
+              stateCode: 'DF',
+              countryCode: 'BR',
+              postCode: '70000-000',
+            },
           },
         }),
       }
