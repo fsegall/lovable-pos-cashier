@@ -1,44 +1,55 @@
-# CHECKLIST — Merchant AI Checkout (Outubro/2025)
+# 🤖 CHECKLIST — Solana Merchant AI (Outubro/2025)
 
 > Guia tático de execução até as submissões **Colosseum (Global)** e **Superteam Brazil (Side Track)**.
-> Timezone: **America/Sao_Paulo**. Atualize este arquivo durante a sprint.
+> Timezone: **America/Sao_Paulo**. Atualizado: **10 OUT 2025**.
 
-## 📊 Progresso Atual (8 OUT 2025 - Atualizado)
+## 📊 Progresso Atual (10 OUT 2025)
 
-**✅ CONCLUÍDO (Semana A - Day 1):**
-- **Setup & Infra**: Supabase configurado, Types gerados, 6 Edge Functions implementadas
-- **Edge Functions**: Todas as 6 functions (validate-payment, settlement-webhook, get-receipt-pdf, export-csv, chat-assistant, openai-realtime-token)
-- **Banco & RPCs**: Migrations, RLS, RPCs, índices implementados
-- **Voice & Chat**: VoiceInput.tsx e ChatAssistant.tsx com OpenAI Realtime integrado
-- **Solana Integration**: Wallet Adapter + Solana Pay QR + Polling implementados
-- **BRZ Support**: Configuração completa + precise-money utils
-- **Demo Mode**: Fluxo end-to-end funcionando
-- **Documentation**: Hackathon guide, devnet setup, passkey roadmap
+**✅ CONCLUÍDO (Day 1-2: 7-8 OUT):**
+- **Setup & Infra**: Supabase configurado, 10 Edge Functions implementadas
+- **AI Features**: Chat Assistant + Voice Assistant (OpenAI Realtime)
+- **Solana Pay**: Wallet Adapter + QR generation + Direct payment
+- **Settlement**: Wise + Circle Edge Functions + webhooks
+- **Database**: settlements + webhook_events tables
+- **🎉 MILESTONE**: Primeiro pagamento on-chain REAL confirmado!
 
-**✅ CONCLUÍDO (Day 2 - 8 OUT):**
-- **🏦 Settlement Infrastructure**: Tabelas settlements + webhook_events criadas
-- **💳 Pagamento Direto**: Botão "Pagar com Wallet Conectada" funcionando
-- **🎉 MILESTONE**: Primeiro pagamento on-chain REAL confirmado! (TX: 5zEXS8an...UTR9W)
-- **🔍 Debug Tools**: Debug panel + troubleshooting guide
-- **📚 Docs Organization**: Estrutura docs/br e docs/us criada
-- **🔧 Fixes**: JWT auth, BRZ mint, receipt.ref, UX melhorada
+**✅ CONCLUÍDO (Day 9: 9 OUT):**
+- **Settlement UI**: Panel + Modal com provider selection
+- **Dashboard Analytics**: 7 cards (4 main + 3 settlement)
+- **Settings Page**: Provider configuration UI
+- **Wise Integration**: Testado até Quote + DEMO MODE implementado
+- **Documentation**: 15+ docs criados (Wise, Circle, Settlement)
+- **Debug Tools**: Comprehensive troubleshooting guides
 
-**🔄 PRÓXIMOS (Semana B - 9-14 OUT):**
-- Settlement UI (ReceiptDetail + Settings)
-- Circle/Wise sandbox testing
-- Dashboard de métricas
-- Webhook HMAC validation
-- PDF oficial de recibos
+**✅ CONCLUÍDO (Day 10: 10 OUT - HOJE!):**
+- **🪐 Jupiter Integration**: Multi-token support (100+ SPL tokens!)
+  - useJupiterSwap hook
+  - TokenSelector UI component
+  - BRZ, USDC, EURC settlement options
+  - Dynamic token support in payments
+- **🤖 Rebranding**: "Solana Merchant AI" - AI features highlighted
+- **📚 Docs Reorganization**: 42 docs em estrutura temática (br/us folders)
+- **📱 Social Media Strategy**: Templates + calendar delegado
 
-**🔮 FUTURO (Semana C/D):**
-- Jupiter integration (multi-token swap)
-- Passkey/Embedded Wallets (login social)
-- QuickCharge e Templates de produtos
-- Keyboard shortcuts
-- Programa Solana on-chain (opcional)
-- Vídeos + Submission
+**🔄 EM ANDAMENTO (Próximas horas):**
+- Testing Jupiter UI
+- HMAC validation nos webhooks
+- Screenshots profissionais (7-10)
+- Final polish
 
-**📈 PROGRESSO GERAL: ~90% concluído** 🚀
+**📈 PROGRESSO GERAL: ~95% concluído!** 🚀✨
+
+---
+
+## 🏆 ACHIEVEMENTS DESBLOQUEADOS
+
+- ✅ On-chain payment 100% funcional
+- ✅ AI Assistant (chat + voice)
+- ✅ Multi-token (Jupiter - 100+ tokens)
+- ✅ Global settlement (BRZ/USD/EUR)
+- ✅ Professional docs structure
+- ✅ DEMO MODE para sandbox limitations
+- ✅ Production-ready codebase
 
 ---
 
