@@ -9,6 +9,7 @@ const WISE_API_TOKEN = Deno.env.get('WISE_API_TOKEN');
 const WISE_API_BASE = Deno.env.get('WISE_API_BASE') || 'https://api.sandbox.transferwise.tech';
 const WISE_PROFILE_ID = Deno.env.get('WISE_PROFILE_ID');
 const WISE_RECIPIENT_ID = Deno.env.get('WISE_RECIPIENT_ID');
+const DEMO_MODE = Deno.env.get('DEMO_MODE') === 'true';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -93,6 +94,50 @@ serve(async (req) => {
 
     const quote = await quoteResponse.json();
     console.log('✅ Quote created:', { id: quote.id, fee: quote.fee, rate: quote.rate });
+
+    // DEMO MODE: Simulate successful transfer for BRL (sandbox limitation)
+    if (DEMO_MODE && currency === 'BRL') {
+      console.log('🎭 DEMO MODE: Simulating successful Wise transfer for BRL');
+      const demoTransferId = `demo-wise-${crypto.randomUUID()}`;
+      
+      // Record settlement in database
+      const { data: settlement } = await supabase
+        .from('settlements')
+        .insert({
+          payment_id: (await supabase
+            .from('payments')
+            .select('id')
+            .eq('invoice_id', invoice.id)
+            .single()
+          ).data?.id,
+          provider: 'wise',
+          provider_tx_id: demoTransferId,
+          currency: currency,
+          amount: amount,
+          fee: quote.fee || (amount * 0.01), // 1% estimated fee
+          exchange_rate: quote.rate,
+          status: 'completed',
+          recipient_id: recipientId,
+          metadata: { demo: true, quote_id: quote.id },
+          completed_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      console.log('✅ DEMO: Settlement recorded:', settlement?.id);
+
+      return json({
+        success: true,
+        transferId: demoTransferId,
+        quoteId: quote.id,
+        amount: amount,
+        currency: currency,
+        fee: quote.fee || (amount * 0.01),
+        rate: quote.rate,
+        demo: true,
+        message: 'Demo mode: Transfer simulated successfully (sandbox CPF limitation)'
+      });
+    }
 
     // Step 2: Create transfer
     console.log('💸 Step 2: Creating transfer...');
