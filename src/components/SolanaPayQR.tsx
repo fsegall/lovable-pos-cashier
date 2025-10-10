@@ -11,6 +11,7 @@ import { Loader2, Copy, RefreshCw, CheckCircle2, Clock, Wallet } from 'lucide-re
 import { useToast } from '@/hooks/use-toast';
 import { getBrzMint } from '@/lib/solana-config';
 import { DebugPanel } from '@/components/DebugPanel';
+import { TokenInfo, getDefaultPaymentToken } from '@/lib/tokens';
 
 export type PaymentStatus = 'generating' | 'active' | 'expired' | 'paid' | 'error';
 
@@ -23,6 +24,9 @@ interface SolanaPayQRProps {
   onPaymentConfirmed?: (txHash: string) => void;
   onExpired?: () => void;
   expirationMinutes?: number;
+  paymentToken?: TokenInfo; // Token customer will use to pay (defaults to tBRZ/BRZ)
+  settlementToken?: TokenInfo; // Token merchant wants to receive (for Jupiter swap)
+  autoSwapEnabled?: boolean; // Whether to enable Jupiter auto-swap
 }
 
 export function SolanaPayQR({
@@ -34,6 +38,9 @@ export function SolanaPayQR({
   onPaymentConfirmed,
   onExpired,
   expirationMinutes = 10,
+  paymentToken,
+  settlementToken,
+  autoSwapEnabled = false,
 }: SolanaPayQRProps) {
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
   const [status, setStatus] = useState<PaymentStatus>('generating');
@@ -185,10 +192,13 @@ export function SolanaPayQR({
     setIsSending(true);
     try {
       const recipientPubkey = new PublicKey(recipient);
-      const brzMint = getBrzMint();
+      
+      // Use provided payment token or fallback to default
+      const tokenToUse = paymentToken || getDefaultPaymentToken();
+      const tokenMint = new PublicKey(tokenToUse.mint);
 
-      if (!brzMint) {
-        throw new Error('BRZ mint not configured');
+      if (!tokenMint) {
+        throw new Error('Payment token not configured');
       }
 
       console.log('💰 Sending payment:', {
