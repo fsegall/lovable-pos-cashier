@@ -1,13 +1,17 @@
 # 📚 Solana Merchant AI - Documentation Index
 
-Welcome to the comprehensive documentation for **Solana Merchant AI**!
+> **Comprehensive, bilingual documentation for the AI-powered crypto POS**
+
+**Total:** 38 essential documents | **Languages:** 🇺🇸 English + 🇧🇷 Português
 
 ---
 
 ## 🌍 Choose Your Language
 
-- 🇺🇸 [English Documentation](./us/)
-- 🇧🇷 [Documentação em Português](./br/)
+- 🇺🇸 [English Documentation](./us/) - 20 files
+- 🇧🇷 [Documentação em Português](./br/) - 16 files
+
+**Key docs available in BOTH languages!** ✅
 
 ---
 
